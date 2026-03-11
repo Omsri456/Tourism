@@ -1,0 +1,198 @@
+/* Shared Styles for Directory Pages (Transport, Accommodations, Experiences, Guides) */
+
+.directory-page {
+  background-color: var(--color-background);
+  min-height: calc(100vh - 70px);
+}
+
+.directory-header {
+  background: var(--color-surface);
+  padding: 4rem 5% 3rem;
+  border-bottom: 1px solid var(--color-glass-border);
+  text-align: center;
+}
+
+.directory-icon-bg {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  background-color: rgba(212, 111, 77, 0.1);
+  border-radius: 50%;
+  color: var(--color-secondary);
+  margin-bottom: 1.5rem;
+}
+
+.directory-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2rem;
+  padding: 3rem 5%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.dir-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.dir-image-wrapper {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+}
+
+.dir-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-normal);
+}
+
+.dir-card:hover .dir-image {
+  transform: scale(1.05);
+}
+
+.dir-type-badge {
+  position: absolute;
+  bottom: 15px;
+  left: 15px;
+  background: var(--color-primary);
+  color: white;
+  padding: 0.3rem 0.8rem;
+  border-radius: var(--border-radius-sm);
+  font-size: 0.8rem;
+  font-weight: 600;
+  box-shadow: var(--shadow-sm);
+}
+
+.dir-content {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.dir-title {
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+  color: var(--color-text-main);
+}
+
+.dir-subtitle {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.dir-price {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--color-secondary);
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.rating-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: rgba(232, 163, 23, 0.2);
+  color: #b37d12;
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--border-radius-sm);
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+/* Horizontal Card layout for Transport */
+.transport-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 3rem 5%;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.transport-card {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr 2fr;
+  align-items: center;
+  gap: 2rem;
+  padding: 2rem;
+  background: var(--color-surface);
+}
+
+@media (max-width: 900px) {
+  .transport-card {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    text-align: center;
+  }
+}
+
+.route-endpoint h3 {
+  font-size: 1.2rem;
+  color: var(--color-primary);
+}
+
+.route-connector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: var(--color-text-muted);
+}
+
+.route-line {
+  width: 60px;
+  height: 2px;
+  background: #ddd;
+  margin: 0.5rem 0;
+  position: relative;
+}
+
+.route-line::after {
+  content: '▶';
+  position: absolute;
+  right: -5px;
+  top: -8px;
+  font-size: 12px;
+  color: #ddd;
+}
+
+.transport-details {
+  border-left: 1px solid #eee;
+  padding-left: 2rem;
+}
+
+@media (max-width: 900px) {
+  .transport-details {
+    border-left: none;
+    border-top: 1px solid #eee;
+    padding-left: 0;
+    padding-top: 1rem;
+  }
+}
+
+.transport-meta {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.transport-desc {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
