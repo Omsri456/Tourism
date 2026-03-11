@@ -13,7 +13,8 @@ import {
   Experiences,
   Guides,
   Login,
-  Register
+  Register,
+  Dashboard
 } from './pages';
 
 import './App.css';
@@ -35,6 +36,7 @@ function App() {
             <Route path="/guides" element={<Guides />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/dashboard" element={<Dashboard />} />
           </Routes>
         </main>
         <Footer />

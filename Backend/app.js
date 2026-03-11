@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ override: true });
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
@@ -16,6 +16,7 @@ app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+const path = require("path");
 
 // Routes imports
 const authRoutes = require("./routes/authRoutes");
@@ -24,6 +25,9 @@ const transportRoutes = require("./routes/transportRoutes");
 const accommodationRoutes = require("./routes/accommodationRoutes");
 const experienceRoutes = require("./routes/experienceRoutes");
 const guideRoutes = require("./routes/guideRoutes");
+
+// Serve statically uploaded images
+app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/destinations", destinationRoutes);

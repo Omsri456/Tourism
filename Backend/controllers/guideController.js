@@ -43,12 +43,17 @@ const upsertGuideProfile = async (req, res) => {
     try {
         // Find existing profile
         let profile = await GuideProfile.findOne({ user: req.user._id });
+        
+        const profileData = { ...req.body };
+        if (req.file) {
+            profileData.profileImage = `/uploads/${req.file.filename}`;
+        }
 
         if (profile) {
             // Update
             profile = await GuideProfile.findOneAndUpdate(
                 { user: req.user._id },
-                { $set: req.body },
+                { $set: profileData },
                 { new: true }
             );
             return res.json(profile);
@@ -56,7 +61,7 @@ const upsertGuideProfile = async (req, res) => {
 
         // Create
         profile = new GuideProfile({
-            ...req.body,
+            ...profileData,
             user: req.user._id,
         });
         await profile.save();

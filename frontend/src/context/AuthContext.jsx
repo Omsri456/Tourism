@@ -8,28 +8,39 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // If we establish a /api/auth/me route in the future we can fetch real user data here
-    // For now we will decode the basic state or just rely on the token presence
     if (token) {
-        // Mock user object for UI purposes based on token existence
+      // Restore full user data from localStorage (saved on login/register)
+      const savedUser = localStorage.getItem('user');
+      if (savedUser) {
+        try {
+          setUser(JSON.parse(savedUser));
+        } catch {
+          setUser({ authenticated: true });
+        }
+      } else {
         setUser({ authenticated: true });
-        localStorage.setItem('token', token);
+      }
     } else {
-        setUser(null);
-        localStorage.removeItem('token');
+      setUser(null);
+      localStorage.removeItem('user');
     }
     setLoading(false);
   }, [token]);
 
   const login = (newToken, userData) => {
     setToken(newToken);
-    setUser(userData || { authenticated: true });
+    const userToStore = userData || { authenticated: true };
+    setUser(userToStore);
+    localStorage.setItem('token', newToken);
+    // Persist full user data so it survives page refresh
+    localStorage.setItem('user', JSON.stringify(userToStore));
   };
 
   const logout = () => {
     setToken(null);
     setUser(null);
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
   };
 
   return (

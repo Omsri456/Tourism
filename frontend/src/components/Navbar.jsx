@@ -53,10 +53,15 @@ const Navbar = () => {
         {/* Auth Buttons Desktop */}
         <div className="nav-auth-desktop">
           {user ? (
-            <button onClick={handleLogout} className="auth-btn logout-btn">
-               <LogOut size={18} />
-               <span>Logout</span>
-            </button>
+            <div style={{ display: 'flex', gap: '1rem' }}>
+              <Link to="/dashboard" className={`nav-link ${isActive('/dashboard') ? 'active' : ''}`}>
+                Dashboard
+              </Link>
+              <button onClick={handleLogout} className="auth-btn logout-btn">
+                <LogOut size={18} />
+                <span>Logout</span>
+              </button>
+            </div>
           ) : (
             <Link to="/login" className="auth-btn login-btn">
                <LogIn size={18} />
@@ -87,10 +92,19 @@ const Navbar = () => {
           {/* Auth Buttons Mobile */}
           <div className="mobile-auth-divider"></div>
           {user ? (
-            <button onClick={handleLogout} className="mobile-nav-link mobile-logout-btn">
-               <LogOut size={18} />
-               <span>Logout</span>
-            </button>
+            <>
+              <Link
+                to="/dashboard"
+                className={`mobile-nav-link ${isActive('/dashboard') ? 'active' : ''}`}
+                onClick={() => setIsOpen(false)}
+              >
+                Dashboard
+              </Link>
+              <button onClick={handleLogout} className="mobile-nav-link mobile-logout-btn">
+                <LogOut size={18} />
+                <span>Logout</span>
+              </button>
+            </>
           ) : (
             <Link to="/login" className="mobile-nav-link mobile-login-btn" onClick={() => setIsOpen(false)}>
                <LogIn size={18} />

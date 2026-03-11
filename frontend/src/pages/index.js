@@ -11,5 +11,6 @@ import Experiences from './Experiences';
 import Guides from './Guides';
 import Login from './Login';
 import Register from './Register';
+import Dashboard from './Dashboard';
 
-export { Home, Destinations, DestinationDetail, Transport, Accommodations, Experiences, Guides, Login, Register };
+export { Home, Destinations, DestinationDetail, Transport, Accommodations, Experiences, Guides, Login, Register, Dashboard };

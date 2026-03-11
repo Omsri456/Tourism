@@ -41,10 +41,17 @@ const getExperienceById = async (req, res) => {
 // @access  Private (Organizer/Admin)
 const createExperience = async (req, res) => {
     try {
-        const experience = new CulturalExperience({
+        const experienceData = {
             ...req.body,
             organizer: req.user._id
-        });
+        };
+        
+        // If an image was uploaded, add its path to the images array
+        if (req.file) {
+            experienceData.images = [`/uploads/${req.file.filename}`];
+        }
+
+        const experience = new CulturalExperience(experienceData);
         const createdExperience = await experience.save();
         res.status(201).json(createdExperience);
     } catch (error) {
