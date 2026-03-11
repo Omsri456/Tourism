@@ -1,16 +1,34 @@
-import React, { useState } from 'react';
-import { transportRoutes } from '../data/mockData';
+import React, { useState, useEffect } from 'react';
 import { Bus, Clock, IndianRupee, Map } from 'lucide-react';
+import { fetchApi } from '../api';
 import './Directory.css';
 
 const Transport = () => {
+  const [transportRoutes, setTransportRoutes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
   const [fromLocation, setFromLocation] = useState('');
   const [toLocation, setToLocation] = useState('');
 
+  useEffect(() => {
+    const getTransports = async () => {
+      try {
+        const data = await fetchApi('/transport');
+        setTransportRoutes(data);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+    getTransports();
+  }, []);
+
   const filteredRoutes = transportRoutes.filter(route => {
     return (
-      route.from.toLowerCase().includes(fromLocation.toLowerCase()) &&
-      route.to.toLowerCase().includes(toLocation.toLowerCase())
+      route.origin.toLowerCase().includes(fromLocation.toLowerCase()) &&
+      route.destination.toLowerCase().includes(toLocation.toLowerCase())
     );
   });
 
@@ -40,31 +58,39 @@ const Transport = () => {
       </div>
 
       <div className="transport-list">
-        {filteredRoutes.length > 0 ? (
+        {loading ? (
+           <div className="text-center py-5">
+             <h3 style={{ textAlign: 'center' }}>Loading transport options...</h3>
+           </div>
+        ) : error ? (
+           <div className="text-center py-5 error">
+             <h3 style={{ textAlign: 'center' }}>Error loading data: {error}</h3>
+           </div>
+        ) : filteredRoutes.length > 0 ? (
           filteredRoutes.map(route => (
-            <div key={route.id} className="transport-card glass-card">
+            <div key={route._id} className="transport-card glass-card">
               <div className="route-endpoint">
                 <span className="badge">Origin</span>
-                <h3>{route.from}</h3>
+                <h3>{route.origin}</h3>
               </div>
               
               <div className="route-connector">
                  <Bus size={24} />
                  <div className="route-line"></div>
-                 <small>{route.mode}</small>
+                 <small>{route.modeOfTransport}</small>
               </div>
 
               <div className="route-endpoint">
                  <span className="badge">Destination</span>
-                 <h3>{route.to}</h3>
+                 <h3>{route.destination}</h3>
               </div>
 
               <div className="transport-details">
                  <div className="transport-meta">
-                   <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}><Clock size={16} className="text-secondary" /> {route.time}</div>
-                   <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}><IndianRupee size={16} className="text-secondary"/> {route.cost}</div>
+                   <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}><Clock size={16} className="text-secondary" /> {route.estimatedTime}</div>
+                   <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}><IndianRupee size={16} className="text-secondary"/> ₹{route.approximateCost}</div>
                  </div>
-                 <p className="transport-desc">{route.details}</p>
+                 <p className="transport-desc">{route.suggestedRoute}</p>
                  <button className="btn-outline mt-3" style={{ marginTop: '1rem', padding: '0.5rem 1rem'}}>View Schedule</button>
               </div>
             </div>

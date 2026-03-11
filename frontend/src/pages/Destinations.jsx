@@ -1,14 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { destinations } from '../data/mockData';
 import { Search, MapPin, Filter } from 'lucide-react';
+import { fetchApi } from '../api';
 import './Destinations.css';
 
 const Destinations = () => {
+  const [destinations, setDestinations] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [filter, setFilter] = useState('All');
   const [search, setSearch] = useState('');
 
-  const categories = ['All', 'Waterfalls', 'Wildlife', 'Nature', 'Cultural Heritage', 'Adventure'];
+  const categories = ['All', 'Waterfalls', 'Wildlife and national parks', 'Nature tourism', 'Tribal culture and heritage', 'Adventure tourism'];
+
+  useEffect(() => {
+    const getDestinations = async () => {
+      try {
+        const data = await fetchApi('/destinations');
+        setDestinations(data);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    getDestinations();
+  }, []);
 
   const filteredDestinations = destinations.filter(dest => {
     const matchesCategory = filter === 'All' || dest.category === filter;
@@ -50,18 +68,22 @@ const Destinations = () => {
       </div>
 
       <div className="destinations-grid page">
-        {filteredDestinations.length > 0 ? (
+        {loading ? (
+          <div className="loading">Loading destinations...</div>
+        ) : error ? (
+          <div className="error">Error: {error}</div>
+        ) : filteredDestinations.length > 0 ? (
           filteredDestinations.map(dest => (
-            <div key={dest.id} className="dest-card glass-card">
+            <div key={dest._id} className="dest-card glass-card">
               <div className="dest-image-wrapper">
-                <img src={dest.image} alt={dest.name} className="dest-image" />
+                <img src={dest.images?.[0] || 'https://images.unsplash.com/photo-1543085698-500e2bcaa8e3?auto=format&fit=crop&q=80'} alt={dest.name} className="dest-image" />
                 <span className="dest-badge">{dest.category}</span>
               </div>
               <div className="dest-info">
                 <h3>{dest.name}</h3>
-                <p className="dest-location"><MapPin size={16} /> {dest.location}</p>
+                <p className="dest-location"><MapPin size={16} /> {dest.locationCoords?.lat ? 'Jharkhand' : 'Jharkhand'}</p>
                 <p className="dest-desc-short">{dest.description.substring(0, 80)}...</p>
-                <Link to={`/destinations/${dest.id}`} className="btn-primary mt-auto">View Details</Link>
+                <Link to={`/destinations/${dest._id}`} className="btn-primary mt-auto">View Details</Link>
               </div>
             </div>
           ))

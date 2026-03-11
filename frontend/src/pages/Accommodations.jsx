@@ -1,12 +1,29 @@
-import React, { useState } from 'react';
-import { accommodations } from '../data/mockData';
+import React, { useState, useEffect } from 'react';
 import { Home, MapPin, Star, Coffee } from 'lucide-react';
+import { fetchApi } from '../api';
 import './Directory.css';
 
 const Accommodations = () => {
+  const [accommodations, setAccommodations] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [filterType, setFilterType] = useState('All');
 
   const types = ['All', 'Hotel', 'Eco-lodge', 'Tribal Homestay'];
+
+  useEffect(() => {
+    const getAccommodations = async () => {
+      try {
+        const data = await fetchApi('/accommodations');
+        setAccommodations(data);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+    getAccommodations();
+  }, []);
 
   const filteredStays = accommodations.filter(
     stay => filterType === 'All' || stay.type === filterType
@@ -33,16 +50,27 @@ const Accommodations = () => {
       </div>
 
       <div className="directory-grid">
-         {filteredStays.map(stay => (
-           <div key={stay.id} className="dir-card glass-card">
+         {loading ? (
+           <div className="text-center py-5 w-100">
+             <h3 style={{ textAlign: 'center' }}>Loading accommodations...</h3>
+           </div>
+         ) : error ? (
+           <div className="text-center py-5 error w-100">
+             <h3 style={{ textAlign: 'center' }}>Error loading data: {error}</h3>
+           </div>
+         ) : filteredStays.length > 0 ? (
+           filteredStays.map(stay => (
+             <div key={stay._id} className="dir-card glass-card">
               <div className="dir-image-wrapper">
-                 <img src={stay.image} alt={stay.name} className="dir-image" />
+                 <img src={stay.images?.[0] || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80'} alt={stay.name} className="dir-image" />
                  <span className="dir-type-badge">{stay.type}</span>
               </div>
               <div className="dir-content">
                  <h3 className="dir-title">{stay.name}</h3>
                  <p className="dir-subtitle"><MapPin size={16} /> {stay.location}</p>
-                 <p style={{fontSize: '0.9rem', color: '#666', marginBottom: '1rem'}}>{stay.distanceToAttraction}</p>
+                 <p style={{fontSize: '0.9rem', color: '#666', marginBottom: '1rem'}}>
+                   Nearby Attraction: {stay.nearbyDestinations && stay.nearbyDestinations.length > 0 ? stay.nearbyDestinations[0].name || stay.nearbyDestinations[0] : 'N/A'}
+                 </p>
                  
                  <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
                     {stay.facilities.map((fac, idx) => (
@@ -51,13 +79,17 @@ const Accommodations = () => {
                  </div>
                  
                  <div className="dir-price">
-                    <span>{stay.price}</span>
-                    <span className="rating-badge"><Star size={14} fill="currentColor"/> {stay.rating}</span>
+                    <span>₹{stay.pricePerNight} / night</span>
+                    <span className="rating-badge"><Star size={14} fill="currentColor"/> {stay.rating || 0}</span>
                  </div>
                  <button className="btn-primary" style={{ width: '100%', marginTop: '1rem', justifyContent: 'center' }}>Book Now</button>
               </div>
            </div>
-         ))}
+         ))) : (
+           <div className="text-center py-5 w-100">
+             <h3 style={{ textAlign: 'center' }}>No accommodations found</h3>
+           </div>
+         )}
       </div>
     </div>
   );
