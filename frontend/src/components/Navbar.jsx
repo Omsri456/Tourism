@@ -1,10 +1,19 @@
-import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, MapPin } from 'lucide-react';
+import React, { useState, useContext } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Menu, X, MapPin, LogIn, LogOut } from 'lucide-react';
+import { AuthContext } from '../context/AuthContext';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout } = useContext(AuthContext);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+    setIsOpen(false);
+  };
 
   const navLinks = [
     { name: 'Home', path: '/' },
@@ -41,6 +50,21 @@ const Navbar = () => {
           ))}
         </div>
 
+        {/* Auth Buttons Desktop */}
+        <div className="nav-auth-desktop">
+          {user ? (
+            <button onClick={handleLogout} className="auth-btn logout-btn">
+               <LogOut size={18} />
+               <span>Logout</span>
+            </button>
+          ) : (
+            <Link to="/login" className="auth-btn login-btn">
+               <LogIn size={18} />
+               <span>Login</span>
+            </Link>
+          )}
+        </div>
+
          {/* Mobile Menu Button */}
          <button className="mobile-menu-btn" onClick={() => setIsOpen(!isOpen)}>
           {isOpen ? <X size={24} /> : <Menu size={24} />}
@@ -60,6 +84,19 @@ const Navbar = () => {
               {link.name}
             </Link>
           ))}
+          {/* Auth Buttons Mobile */}
+          <div className="mobile-auth-divider"></div>
+          {user ? (
+            <button onClick={handleLogout} className="mobile-nav-link mobile-logout-btn">
+               <LogOut size={18} />
+               <span>Logout</span>
+            </button>
+          ) : (
+            <Link to="/login" className="mobile-nav-link mobile-login-btn" onClick={() => setIsOpen(false)}>
+               <LogIn size={18} />
+               <span>Login / Register</span>
+            </Link>
+          )}
         </div>
       )}
     </nav>

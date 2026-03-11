@@ -11,7 +11,9 @@ import {
   Transport,
   Accommodations,
   Experiences,
-  Guides
+  Guides,
+  Login,
+  Register
 } from './pages';
 
 import './App.css';
@@ -31,6 +33,8 @@ function App() {
             <Route path="/accommodations" element={<Accommodations />} />
             <Route path="/experiences" element={<Experiences />} />
             <Route path="/guides" element={<Guides />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
           </Routes>
         </main>
         <Footer />

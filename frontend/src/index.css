@@ -192,6 +192,75 @@ ul {
   padding: 1rem 5%;
   font-weight: 500;
   border-bottom: 1px solid #eee;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Navbar Auth Buttons */
+.nav-auth-desktop {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.auth-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius-lg);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: none;
+}
+
+.login-btn {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+.login-btn:hover {
+  background-color: var(--color-primary-light);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.logout-btn {
+  background-color: transparent;
+  color: var(--color-text-muted);
+  border: 1px solid #ddd;
+}
+
+.logout-btn:hover {
+  color: var(--color-secondary);
+  border-color: var(--color-secondary);
+  background-color: rgba(212, 111, 77, 0.05);
+}
+
+.mobile-auth-divider {
+  height: 1px;
+  background-color: #eee;
+  margin: 0.5rem 0;
+}
+
+.mobile-login-btn {
+  color: var(--color-primary) !important;
+  font-weight: 600;
+}
+
+.mobile-logout-btn {
+  color: var(--color-secondary) !important;
+  font-weight: 600;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 1rem;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
 }
 
 /* Footer */

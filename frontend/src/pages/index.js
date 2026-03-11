@@ -9,5 +9,7 @@ import Transport from './Transport';
 import Accommodations from './Accommodations';
 import Experiences from './Experiences';
 import Guides from './Guides';
+import Login from './Login';
+import Register from './Register';
 
-export { Home, Destinations, DestinationDetail, Transport, Accommodations, Experiences, Guides };
+export { Home, Destinations, DestinationDetail, Transport, Accommodations, Experiences, Guides, Login, Register };
