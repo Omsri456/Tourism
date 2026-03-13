@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { UserCheck, MapPin, Star, MessageCircle, Navigation, Award } from 'lucide-react';
+import { UserCheck, MapPin, Star, MessageCircle, Navigation, Award, Lock } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { fetchApi } from '../api';
+import usePermissions from '../hooks/usePermissions';
 import './Directory.css';
 
 const Guides = () => {
   const [guides, setGuides] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { canBookGuide, isLoggedIn, role } = usePermissions();
 
   useEffect(() => {
     const getGuides = async () => {
@@ -21,6 +24,7 @@ const Guides = () => {
     };
     getGuides();
   }, []);
+
   return (
     <div className="directory-page">
       <div className="directory-header">
@@ -71,13 +75,31 @@ const Guides = () => {
                     )) : <span className="badge" style={{ backgroundColor: 'rgba(212, 111, 77, 0.1)', color: 'var(--color-secondary)' }}>General Guide</span>}
                  </div>
                  
+                 {/* Role-based action buttons */}
                  <div style={{ width: '100%', display: 'flex', gap: '1rem', marginTop: 'auto' }}>
-                    <button className="btn-outline" style={{ flex: 1, padding: '0.6rem', display: 'flex', justifyContent: 'center' }}><MessageCircle size={18} /></button>
-                     <button className="btn-primary" style={{ flex: 3, justifyContent: 'center' }}>Book Guide</button>
-                  </div>
-               </div>
-            </div>
-           ))
+                    {/* Message button — only for non-guides who are logged in */}
+                    {isLoggedIn && role !== 'Guide' && (
+                      <button className="btn-outline" style={{ flex: 1, padding: '0.6rem', display: 'flex', justifyContent: 'center' }}>
+                        <MessageCircle size={18} />
+                      </button>
+                    )}
+
+                    {/* Book Guide — role-based */}
+                    {!isLoggedIn ? (
+                      <Link to="/login" className="btn-primary" style={{ flex: 3, justifyContent: 'center', display: 'flex', alignItems: 'center', gap: '0.4rem', textDecoration: 'none' }}>
+                        <Lock size={14} /> Login to Book
+                      </Link>
+                    ) : canBookGuide ? (
+                      <button className="btn-primary" style={{ flex: 3, justifyContent: 'center' }}>Book Guide</button>
+                    ) : role === 'Guide' ? (
+                      <div style={{ flex: 1, padding: '0.6rem', background: '#f1f5f9', borderRadius: '8px', fontSize: '0.82rem', color: '#64748b', textAlign: 'center' }}>
+                        🧭 You are a guide
+                      </div>
+                    ) : null}
+                 </div>
+              </div>
+           </div>
+          ))
          ) : (
            <div className="text-center py-5 w-100">
              <h3 style={{ textAlign: 'center' }}>No guides found</h3>

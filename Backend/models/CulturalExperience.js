@@ -6,14 +6,14 @@ const culturalExperienceSchema = new mongoose.Schema({
     category: {
         type: String,
         required: true,
-        enum: ['Tribal dance', 'Local food tour', 'Craft workshop', 'Village tourism', 'Other']
+        enum: ['Cultural Music', 'Traditional Dance', 'Tribal Crafts', 'Local Cuisine', 'Festivals', 'Tribal dance', 'Local food tour', 'Craft workshop', 'Village tourism', 'Other']
     },
     location: { type: String, required: true },
     duration: { type: String, required: true },
     price: { type: Number, required: true },
     organizerInfo: {
-        name: { type: String, required: true },
-        contact: { type: String, required: true }
+        name: { type: String },
+        contact: { type: String }
     },
     organizer: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     images: [{ type: String }],

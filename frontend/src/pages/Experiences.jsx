@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Music, MapPin, Clock, Users } from 'lucide-react';
+import { Music, MapPin, Clock, Users, Lock } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { fetchApi } from '../api';
+import usePermissions from '../hooks/usePermissions';
 import './Directory.css';
 
 const Experiences = () => {
   const [experiences, setExperiences] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { canBookExperience, isLoggedIn, role } = usePermissions();
 
   useEffect(() => {
     const getExperiences = async () => {
@@ -21,6 +24,7 @@ const Experiences = () => {
     };
     getExperiences();
   }, []);
+
   return (
     <div className="directory-page">
       <div className="directory-header">
@@ -55,9 +59,21 @@ const Experiences = () => {
                  </div>
                  
                  <div className="dir-price">
-                    <span>₹{exp.price} / person</span>
+                    <span>&#8377;{exp.price} / person</span>
                  </div>
-                 <button className="btn-secondary" style={{ width: '100%', marginTop: '1rem' }}>Reserve Spot</button>
+
+                 {/* Role-based Reserve button */}
+                 {!isLoggedIn ? (
+                   <Link to="/login" className="btn-secondary" style={{ width: '100%', marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', textDecoration: 'none' }}>
+                     <Lock size={14} /> Login to Reserve
+                   </Link>
+                 ) : canBookExperience ? (
+                   <button className="btn-secondary" style={{ width: '100%', marginTop: '1rem' }}>Reserve Spot</button>
+                 ) : (
+                   <div style={{ marginTop: '1rem', padding: '0.6rem', background: '#f1f5f9', borderRadius: '8px', fontSize: '0.85rem', color: '#64748b', textAlign: 'center' }}>
+                     {role === 'Organizer' ? '🎭 As an organizer, you host experiences' : 'Not available for your role'}
+                   </div>
+                 )}
               </div>
            </div>
          ))) : (
