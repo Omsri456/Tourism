@@ -321,6 +321,61 @@
     margin-bottom: 0.4rem;
 }
 
+/* ── Bookings / Reservations List ── */
+.booking-list-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 1.5rem;
+    background: white;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 14px;
+    transition: all 0.2s ease;
+}
+
+.booking-list-card:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+}
+
+.booking-list-info {
+    flex: 1;
+}
+
+.booking-list-info h4 {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 0.4rem;
+}
+
+.booking-list-info p {
+    font-size: 0.85rem;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.3rem;
+}
+
+.booking-list-info p svg {
+    width: 14px;
+    height: 14px;
+}
+
+.booking-status-badge {
+    padding: 0.35rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border: 1.5px solid transparent;
+}
+
+.status-pending { background: #fffbeb; color: #b45309; border-color: #fde68a; }
+.status-confirmed { background: #f0fdf4; color: #166534; border-color: #bbf7d0; }
+.status-cancelled { background: #fff1f2; color: #be123c; border-color: #fecdd3; }
+
 /* ── Forms ── */
 .dashboard-form {
     display: flex;

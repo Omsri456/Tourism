@@ -25,6 +25,7 @@ const transportRoutes = require("./routes/transportRoutes");
 const accommodationRoutes = require("./routes/accommodationRoutes");
 const experienceRoutes = require("./routes/experienceRoutes");
 const guideRoutes = require("./routes/guideRoutes");
+const bookingRoutes = require("./routes/bookingRoutes");
 
 // Serve statically uploaded images
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
@@ -35,6 +36,7 @@ app.use("/api/transport", transportRoutes);
 app.use("/api/accommodations", accommodationRoutes);
 app.use("/api/experiences", experienceRoutes);
 app.use("/api/guides", guideRoutes);
+app.use("/api/bookings", bookingRoutes);
 
 // Base route test
 app.get("/", (req, res) => {

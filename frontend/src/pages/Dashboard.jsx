@@ -2,6 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { fetchApi } from '../api';
 import './Dashboard.css';
+import { Link } from 'react-router-dom';
 import { 
   User, 
   Mail, 
@@ -16,7 +17,10 @@ import {
   List,
   Edit2,
   Trash2,
-  X
+  X,
+  BookOpen,
+  ClipboardList,
+  Clock
 } from 'lucide-react';
 
 const EMPTY_EXPERIENCE = {
@@ -52,12 +56,66 @@ const Dashboard = () => {
     const [guideMessage, setGuideMessage] = useState({ type: '', text: '' });
     const [guideLoading, setGuideLoading] = useState(false);
 
-    // ── Fetch my experiences when tab opens ─────────────────────────────
+    // ── My Bookings State (Tourist) ────────────────────────────────────────
+    const [myBookings, setMyBookings] = useState([]);
+    const [bookingsLoading, setBookingsLoading] = useState(false);
+
+    // ── Organizer Reservations State ───────────────────────────────────────
+    const [reservations, setReservations] = useState([]);
+    const [reservationsLoading, setReservationsLoading] = useState(false);
+    const [statusUpdating, setStatusUpdating] = useState(null);
+
+    // ── Fetch data when tab changes ─────────────────────────────────────
     useEffect(() => {
         if (activeTab === 'my-experiences' && (user?.role === 'Organizer' || user?.role === 'Admin')) {
             fetchMyExperiences();
         }
+        if (activeTab === 'my-bookings') {
+            fetchMyBookings();
+        }
+        if (activeTab === 'reservations' && (user?.role === 'Organizer' || user?.role === 'Admin')) {
+            fetchReservations();
+        }
     }, [activeTab]);
+
+    const fetchMyBookings = async () => {
+        setBookingsLoading(true);
+        try {
+            const data = await fetchApi('/bookings/my');
+            setMyBookings(data);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setBookingsLoading(false);
+        }
+    };
+
+    const fetchReservations = async () => {
+        setReservationsLoading(true);
+        try {
+            const data = await fetchApi('/bookings/organizer');
+            setReservations(data);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setReservationsLoading(false);
+        }
+    };
+
+    const handleReservationStatus = async (bookingId, status) => {
+        setStatusUpdating(bookingId);
+        try {
+            await fetchApi(`/bookings/${bookingId}/status`, {
+                method: 'PUT',
+                body: JSON.stringify({ status }),
+            });
+            setReservations(prev => prev.map(b => b._id === bookingId ? { ...b, status } : b));
+        } catch (err) {
+            alert('Failed to update status: ' + err.message);
+        } finally {
+            setStatusUpdating(null);
+        }
+    };
 
     const fetchMyExperiences = async () => {
         setMyExpLoading(true);
@@ -188,12 +246,21 @@ const Dashboard = () => {
                     <button className={activeTab === 'profile' ? 'active' : ''} onClick={() => setActiveTab('profile')}>
                         <User /> Profile Overview
                     </button>
+                    {/* Tourist + Guide: My Bookings */}
+                    {(user.role === 'Tourist' || user.role === 'Guide' || user.role === 'Admin') && (
+                        <button className={activeTab === 'my-bookings' ? 'active' : ''} onClick={() => setActiveTab('my-bookings')}>
+                            <BookOpen /> My Bookings
+                        </button>
+                    )}
                     {(user.role === 'Organizer' || user.role === 'Admin') && (<>
                         <button className={activeTab === 'my-experiences' ? 'active' : ''} onClick={() => setActiveTab('my-experiences')}>
                             <List /> My Experiences
                         </button>
                         <button className={activeTab === 'create-experience' ? 'active' : ''} onClick={() => setActiveTab('create-experience')}>
                             <PlusCircle /> Create Experience
+                        </button>
+                        <button className={activeTab === 'reservations' ? 'active' : ''} onClick={() => setActiveTab('reservations')}>
+                            <ClipboardList /> Reservations
                         </button>
                     </>)}
                     {(user.role === 'Guide' || user.role === 'Admin') && (
@@ -217,6 +284,111 @@ const Dashboard = () => {
                             <div className="info-item"><label><Mail /> Email Address</label><p>{user.email}</p></div>
                             <div className="info-item"><label><CheckCircle /> Account Status</label><p>Verified</p></div>
                             <div className="info-item"><label><MapPin /> Member Since</label><p>{new Date().getFullYear()}</p></div>
+                        </div>
+                    </div>
+                )}
+
+                {/* ── My Bookings Tab (Tourist / Guide) ── */}
+                {activeTab === 'my-bookings' && (
+                    <div className="dashboard-card">
+                        <h2>My Bookings</h2>
+                        <p className="subtitle">All your experience reservations in one place</p>
+
+                        {bookingsLoading && <p style={{ color: '#94a3b8', textAlign: 'center', padding: '2rem' }}>Loading bookings...</p>}
+
+                        {!bookingsLoading && myBookings.length === 0 && (
+                            <div className="empty-state">
+                                <BookOpen size={52} />
+                                <h3>No bookings yet</h3>
+                                <p>Browse <Link to="/experiences" style={{ color: '#2e7d32', fontWeight: 700 }}>Cultural Experiences</Link> and reserve a spot!</p>
+                            </div>
+                        )}
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                            {myBookings.map(booking => (
+                                <div key={booking._id} className="booking-list-card">
+                                    <div className="booking-list-info">
+                                        <h4>{booking.experience?.title || 'Guide Booking'}</h4>
+                                        <p>
+                                            <Calendar size={13} /> {new Date(booking.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                            &nbsp;·&nbsp;
+                                            <Users size={13} /> {booking.numberOfPeople} {booking.numberOfPeople === 1 ? 'person' : 'people'}
+                                            &nbsp;·&nbsp;
+                                            <DollarSign size={13} /> &#8377;{booking.totalPrice}
+                                        </p>
+                                        {booking.experience?.location && <p><MapPin size={12} /> {booking.experience.location}</p>}
+                                    </div>
+                                    <span className={`booking-status-badge status-${booking.status}`}>
+                                        {booking.status === 'pending' && '🟡 Pending'}
+                                        {booking.status === 'confirmed' && '🟢 Confirmed'}
+                                        {booking.status === 'cancelled' && '🔴 Cancelled'}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* ── Reservations Tab (Organizer) ── */}
+                {activeTab === 'reservations' && (
+                    <div className="dashboard-card">
+                        <h2>Reservations</h2>
+                        <p className="subtitle">Tourists who have booked your experiences</p>
+
+                        {reservationsLoading && <p style={{ color: '#94a3b8', textAlign: 'center', padding: '2rem' }}>Loading reservations...</p>}
+
+                        {!reservationsLoading && reservations.length === 0 && (
+                            <div className="empty-state">
+                                <ClipboardList size={52} />
+                                <h3>No reservations yet</h3>
+                                <p>When tourists book your experiences, they'll appear here.</p>
+                            </div>
+                        )}
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                            {reservations.map(booking => (
+                                <div key={booking._id} className="booking-list-card">
+                                    <div className="booking-list-info">
+                                        <h4>{booking.experience?.title}</h4>
+                                        <p>
+                                            <User size={13} /> {booking.tourist?.name}
+                                            &nbsp;·&nbsp;
+                                            <Calendar size={13} /> {new Date(booking.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                            &nbsp;·&nbsp;
+                                            <Users size={13} /> {booking.numberOfPeople} {booking.numberOfPeople === 1 ? 'person' : 'people'}
+                                        </p>
+                                        <p style={{ marginTop: '0.25rem' }}>
+                                            <DollarSign size={13} /> Total: &#8377;{booking.totalPrice}
+                                            {booking.specialRequests && <>&nbsp;·&nbsp; Note: "{booking.specialRequests}"</>}
+                                        </p>
+                                    </div>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'flex-end' }}>
+                                        <span className={`booking-status-badge status-${booking.status}`}>
+                                            {booking.status === 'pending' && '🟡 Pending'}
+                                            {booking.status === 'confirmed' && '🟢 Confirmed'}
+                                            {booking.status === 'cancelled' && '🔴 Cancelled'}
+                                        </span>
+                                        {booking.status === 'pending' && (
+                                            <div style={{ display: 'flex', gap: '0.4rem' }}>
+                                                <button
+                                                    className="btn-edit"
+                                                    disabled={statusUpdating === booking._id}
+                                                    onClick={() => handleReservationStatus(booking._id, 'confirmed')}
+                                                >
+                                                    <CheckCircle size={13} /> Confirm
+                                                </button>
+                                                <button
+                                                    className="btn-delete"
+                                                    disabled={statusUpdating === booking._id}
+                                                    onClick={() => handleReservationStatus(booking._id, 'cancelled')}
+                                                >
+                                                    <X size={13} /> Cancel
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 )}
@@ -265,7 +437,7 @@ const Dashboard = () => {
                             {myExperiences.map(exp => (
                                 <div key={exp._id} className="my-exp-card">
                                     {exp.images?.[0] ? (
-                                        <img src={`http://localhost:5000${exp.images[0]}`} alt={exp.title} className="my-exp-img" />
+                                        <img src={exp.images[0]} alt={exp.title} className="my-exp-img" />
                                     ) : (
                                         <div className="my-exp-img" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f1f5f9' }}>
                                             <Image size={24} style={{ color: '#cbd5e1' }} />
