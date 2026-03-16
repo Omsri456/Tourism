@@ -20,7 +20,8 @@ import {
   X,
   BookOpen,
   ClipboardList,
-  Clock
+  Clock,
+  Users
 } from 'lucide-react';
 
 const EMPTY_EXPERIENCE = {
