@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { fetchApi } from '../api';
 import './Dashboard.css';
-import { Link } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import { 
   User, 
   Mail, 
@@ -30,7 +30,8 @@ const EMPTY_EXPERIENCE = {
 
 const Dashboard = () => {
     const { user } = useContext(AuthContext);
-    const [activeTab, setActiveTab] = useState('profile');
+    const location = useLocation();
+    const [activeTab, setActiveTab] = useState(location.state?.tab || 'profile');
 
     // ── Create Experience State ────────────────────────────────────────────
     const [loading, setLoading] = useState(false);

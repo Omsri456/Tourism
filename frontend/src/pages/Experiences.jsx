@@ -171,7 +171,7 @@ const Experiences = () => {
               </form>
             ) : (
               <div style={{ textAlign: 'center', padding: '1.5rem 0' }}>
-                <Link to="/dashboard" className="booking-submit-btn" style={{ textDecoration: 'none', display: 'inline-block' }}>
+                <Link to="/dashboard" state={{ tab: 'my-bookings' }} className="booking-submit-btn" style={{ textDecoration: 'none', display: 'inline-block' }}>
                   View My Bookings
                 </Link>
               </div>
