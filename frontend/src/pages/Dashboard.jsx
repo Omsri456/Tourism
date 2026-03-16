@@ -224,41 +224,67 @@ const Dashboard = () => {
                 {/* ── My Experiences Tab ── */}
                 {activeTab === 'my-experiences' && (
                     <div className="dashboard-card">
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
                             <div>
                                 <h2>My Experiences</h2>
-                                <p className="subtitle">Manage all the experiences you've created</p>
+                                <p className="subtitle">Manage all the experiences you've published</p>
                             </div>
-                            <button className="submit-btn" style={{ width: 'auto', padding: '0.6rem 1.2rem' }} onClick={() => setActiveTab('create-experience')}>
+                            <button className="submit-btn" style={{ width: 'auto', padding: '0.6rem 1.2rem', marginTop: 0 }} onClick={() => setActiveTab('create-experience')}>
                                 <PlusCircle size={16} /> Add New
                             </button>
                         </div>
 
-                        {myExpLoading && <p style={{ textAlign: 'center' }}>Loading...</p>}
+                        {/* Stats bar */}
+                        {myExperiences.length > 0 && (
+                            <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
+                                {[
+                                    { label: 'Total', value: myExperiences.length, color: '#2e7d32' },
+                                    { label: 'With Image', value: myExperiences.filter(e => e.images?.length > 0).length, color: '#1d4ed8' },
+                                    { label: 'Categories', value: new Set(myExperiences.map(e => e.category)).size, color: '#7c3aed' },
+                                ].map(stat => (
+                                    <div key={stat.label} style={{ flex: 1, padding: '0.9rem 1rem', borderRadius: '12px', background: '#f8fafc', border: '1.5px solid #e2e8f0', textAlign: 'center' }}>
+                                        <div style={{ fontSize: '1.6rem', fontWeight: 800, color: stat.color }}>{stat.value}</div>
+                                        <div style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{stat.label}</div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {myExpLoading && <p style={{ textAlign: 'center', color: '#94a3b8', padding: '2rem' }}>Loading your experiences...</p>}
                         {myExpError && <div className="status-message error"><AlertCircle /> {myExpError}</div>}
 
                         {!myExpLoading && myExperiences.length === 0 && (
-                            <div style={{ textAlign: 'center', padding: '3rem', color: '#94a3b8' }}>
-                                <List size={48} style={{ marginBottom: '1rem', opacity: 0.4 }} />
+                            <div className="empty-state">
+                                <List size={52} />
                                 <h3>No experiences yet</h3>
-                                <p>Click "Add New" to create your first experience</p>
+                                <p>Click "Add New" to publish your first cultural experience</p>
                             </div>
                         )}
 
                         <div className="my-exp-list">
                             {myExperiences.map(exp => (
                                 <div key={exp._id} className="my-exp-card">
-                                    {exp.images?.[0] && (
+                                    {exp.images?.[0] ? (
                                         <img src={`http://localhost:5000${exp.images[0]}`} alt={exp.title} className="my-exp-img" />
+                                    ) : (
+                                        <div className="my-exp-img" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f1f5f9' }}>
+                                            <Image size={24} style={{ color: '#cbd5e1' }} />
+                                        </div>
                                     )}
                                     <div className="my-exp-info">
                                         <h4>{exp.title}</h4>
-                                        <p><MapPin size={13} /> {exp.location} &nbsp;|&nbsp; <Calendar size={13} /> {exp.duration} &nbsp;|&nbsp; <DollarSign size={13} /> ₹{exp.price}</p>
+                                        <p>
+                                            <MapPin size={12} /> {exp.location}
+                                            &nbsp;·&nbsp;
+                                            <Calendar size={12} /> {exp.duration}
+                                            &nbsp;·&nbsp;
+                                            <DollarSign size={12} /> &#8377;{exp.price}
+                                        </p>
                                         <span className="exp-category-badge">{exp.category}</span>
                                     </div>
                                     <div className="my-exp-actions">
-                                        <button className="btn-edit" onClick={() => startEdit(exp)}><Edit2 size={15} /> Edit</button>
-                                        <button className="btn-delete" onClick={() => setDeleteConfirmId(exp._id)}><Trash2 size={15} /> Delete</button>
+                                        <button className="btn-edit" onClick={() => startEdit(exp)}><Edit2 size={14} /> Edit</button>
+                                        <button className="btn-delete" onClick={() => setDeleteConfirmId(exp._id)}><Trash2 size={14} /> Delete</button>
                                     </div>
                                 </div>
                             ))}
