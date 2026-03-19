@@ -6,7 +6,7 @@ const GuideProfile = require('../models/GuideProfile');
 const getGuides = async (req, res) => {
     try {
         const { location, language } = req.query;
-        let query = { isVerified: true }; // Only show verified guides to public by default
+        let query = {}; // Show all guides for prototype
         
         if (location) query.location = { $regex: location, $options: 'i' };
         if (language) query.languagesSpoken = { $regex: language, $options: 'i' };

@@ -1,5 +1,6 @@
 const Booking = require('../models/Booking');
 const CulturalExperience = require('../models/CulturalExperience');
+const GuideProfile = require('../models/GuideProfile');
 
 // @desc    Create a new booking
 // @route   POST /api/bookings
@@ -26,8 +27,10 @@ const createBooking = async (req, res) => {
             bookingData.experience = experienceId;
         } else if (bookingType === 'guide') {
             if (!guideId) return res.status(400).json({ message: 'Guide ID is required' });
-            // For guide bookings, price is negotiated so we set a base placeholder
-            totalPrice = Number(numberOfPeople) * 500; // placeholder rate
+            const guide = await GuideProfile.findById(guideId);
+            if (!guide) return res.status(404).json({ message: 'Guide not found' });
+            
+            totalPrice = Number(numberOfPeople) * (guide.pricePerDay || 500);
             bookingData.guide = guideId;
         } else {
             return res.status(400).json({ message: 'Invalid booking type' });
@@ -83,6 +86,26 @@ const getOrganizerBookings = async (req, res) => {
     }
 };
 
+// @desc    Get all bookings for the guide
+// @route   GET /api/bookings/guide
+// @access  Private (Guide)
+const getGuideBookings = async (req, res) => {
+    try {
+        const guideProfile = await GuideProfile.findOne({ user: req.user._id });
+        if (!guideProfile) {
+            return res.status(404).json({ message: 'Guide profile not found' });
+        }
+
+        const bookings = await Booking.find({ guide: guideProfile._id })
+            .populate('tourist', 'name email')
+            .sort({ createdAt: -1 });
+
+        res.json(bookings);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 // @desc    Update booking status (confirm / cancel)
 // @route   PUT /api/bookings/:id/status
 // @access  Private (Organizer)
@@ -93,12 +116,18 @@ const updateBookingStatus = async (req, res) => {
             return res.status(400).json({ message: 'Invalid status value' });
         }
 
-        const booking = await Booking.findById(req.params.id).populate('experience');
+        const booking = await Booking.findById(req.params.id).populate('experience').populate('guide');
         if (!booking) return res.status(404).json({ message: 'Booking not found' });
 
-        // Verify the organizer owns the experience being booked
-        if (booking.experience.organizer.toString() !== req.user._id.toString()) {
-            return res.status(403).json({ message: 'Not authorized to update this booking' });
+        // Verify authorization based on booking type
+        if (booking.bookingType === 'experience') {
+            if (!booking.experience || booking.experience.organizer.toString() !== req.user._id.toString()) {
+                return res.status(403).json({ message: 'Not authorized to update this booking' });
+            }
+        } else if (booking.bookingType === 'guide') {
+            if (!booking.guide || booking.guide.user.toString() !== req.user._id.toString()) {
+                return res.status(403).json({ message: 'Not authorized to update this booking' });
+            }
         }
 
         booking.status = status;
@@ -109,4 +138,4 @@ const updateBookingStatus = async (req, res) => {
     }
 };
 
-module.exports = { createBooking, getMyBookings, getOrganizerBookings, updateBookingStatus };
+module.exports = { createBooking, getMyBookings, getOrganizerBookings, getGuideBookings, updateBookingStatus };

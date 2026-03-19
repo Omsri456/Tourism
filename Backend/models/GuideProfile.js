@@ -6,14 +6,15 @@ const guideProfileSchema = new mongoose.Schema({
     languagesSpoken: [{ type: String }],
     yearsOfExperience: { type: Number, required: true },
     areasOfExpertise: [{ type: String }],
-    isVerified: { type: Boolean, default: false },
+    isVerified: { type: Boolean, default: true },
     rating: { type: Number, default: 0 },
     reviewsCount: { type: Number, default: 0 },
     contactInfo: {
         phone: String,
         email: String
     },
-    bio: { type: String }
+    bio: { type: String },
+    pricePerDay: { type: Number, default: 500 }
 }, { timestamps: true });
 
 module.exports = mongoose.model('GuideProfile', guideProfileSchema);

@@ -52,7 +52,7 @@ const Dashboard = () => {
 
     // ── Guide Profile State ────────────────────────────────────────────────
     const [guideData, setGuideData] = useState({
-        location: '', bio: '', yearsOfExperience: '',
+        location: '', bio: '', yearsOfExperience: '', pricePerDay: '',
         languagesSpoken: '', areasOfExpertise: '', phone: '', email: '',
     });
     const [guideMessage, setGuideMessage] = useState({ type: '', text: '' });
@@ -75,7 +75,7 @@ const Dashboard = () => {
         if (activeTab === 'my-bookings') {
             fetchMyBookings();
         }
-        if (activeTab === 'reservations' && (user?.role === 'Organizer' || user?.role === 'Admin')) {
+        if (activeTab === 'reservations' && (user?.role === 'Organizer' || user?.role === 'Guide' || user?.role === 'Admin')) {
             fetchReservations();
         }
     }, [activeTab]);
@@ -95,7 +95,8 @@ const Dashboard = () => {
     const fetchReservations = async () => {
         setReservationsLoading(true);
         try {
-            const data = await fetchApi('/bookings/organizer');
+            const endpoint = user?.role === 'Guide' ? '/bookings/guide' : '/bookings/organizer';
+            const data = await fetchApi(endpoint);
             setReservations(data);
         } catch (err) {
             console.error(err);
@@ -214,6 +215,7 @@ const Dashboard = () => {
                 languagesSpoken: guideData.languagesSpoken.split(',').map(s => s.trim()).filter(Boolean),
                 areasOfExpertise: guideData.areasOfExpertise.split(',').map(s => s.trim()).filter(Boolean),
                 yearsOfExperience: Number(guideData.yearsOfExperience),
+                pricePerDay: Number(guideData.pricePerDay),
                 contactInfo: { phone: guideData.phone, email: guideData.email },
             };
             delete payload.phone;
@@ -261,10 +263,12 @@ const Dashboard = () => {
                         <button className={activeTab === 'create-experience' ? 'active' : ''} onClick={() => setActiveTab('create-experience')}>
                             <PlusCircle /> Create Experience
                         </button>
-                        <button className={activeTab === 'reservations' ? 'active' : ''} onClick={() => setActiveTab('reservations')}>
-                            <ClipboardList /> Reservations
-                        </button>
                     </>)}
+                    {(user.role === 'Organizer' || user.role === 'Guide' || user.role === 'Admin') && (
+                        <button className={activeTab === 'reservations' ? 'active' : ''} onClick={() => setActiveTab('reservations')}>
+                            <ClipboardList /> {user.role === 'Guide' ? 'Client Bookings' : 'Reservations'}
+                        </button>
+                    )}
                     {(user.role === 'Guide' || user.role === 'Admin') && (
                         <button className={activeTab === 'guide-profile' ? 'active' : ''} onClick={() => setActiveTab('guide-profile')}>
                             <Activity /> Guide Profile
@@ -310,7 +314,11 @@ const Dashboard = () => {
                             {myBookings.map(booking => (
                                 <div key={booking._id} className="booking-list-card">
                                     <div className="booking-list-info">
-                                        <h4>{booking.experience?.title || 'Guide Booking'}</h4>
+                                        <h4>
+                                            {booking.bookingType === 'guide' 
+                                                ? `Guide Booking: ${booking.guide?.user?.name || 'Local Guide'}` 
+                                                : booking.experience?.title || 'Experience'}
+                                        </h4>
                                         <p>
                                             <Calendar size={13} /> {new Date(booking.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                                             &nbsp;·&nbsp;
@@ -318,7 +326,21 @@ const Dashboard = () => {
                                             &nbsp;·&nbsp;
                                             <DollarSign size={13} /> &#8377;{booking.totalPrice}
                                         </p>
-                                        {booking.experience?.location && <p><MapPin size={12} /> {booking.experience.location}</p>}
+                                        {booking.bookingType === 'experience' && booking.experience?.location && (
+                                            <p><MapPin size={12} /> Location: {booking.experience.location}</p>
+                                        )}
+                                        {booking.bookingType === 'guide' && booking.guide && (
+                                            <div style={{ marginTop: '0.4rem', padding: '0.5rem', background: '#f8fafc', borderRadius: '6px', fontSize: '0.85rem' }}>
+                                                <strong>Contact Info:</strong>
+                                                {booking.guide.contactInfo?.phone && <div><User size={12}/> Phone: {booking.guide.contactInfo.phone}</div>}
+                                                {booking.guide.contactInfo?.email && <div><Mail size={12}/> Email: {booking.guide.contactInfo.email}</div>}
+                                            </div>
+                                        )}
+                                        {booking.specialRequests && (
+                                            <p style={{ marginTop: '0.5rem', fontStyle: 'italic', fontSize: '0.85rem', color: '#64748b' }}>
+                                                <strong>Notes:</strong> "{booking.specialRequests}"
+                                            </p>
+                                        )}
                                     </div>
                                     <span className={`booking-status-badge status-${booking.status}`}>
                                         {booking.status === 'pending' && '🟡 Pending'}
@@ -351,7 +373,7 @@ const Dashboard = () => {
                             {reservations.map(booking => (
                                 <div key={booking._id} className="booking-list-card">
                                     <div className="booking-list-info">
-                                        <h4>{booking.experience?.title}</h4>
+                                        <h4>{booking.experience?.title || 'Tour Guide Booking'}</h4>
                                         <p>
                                             <User size={13} /> {booking.tourist?.name}
                                             &nbsp;·&nbsp;
@@ -659,8 +681,14 @@ const Dashboard = () => {
                                 </div>
                                 <div className="form-group">
                                     <label>Years of Experience</label>
-                                    <div className="input-with-icon"><Calendar />
+                                    <div className="input-with-icon"><Activity />
                                         <input type="number" name="yearsOfExperience" value={guideData.yearsOfExperience} onChange={handleGuideChange} placeholder="e.g. 5" required min="0" />
+                                    </div>
+                                </div>
+                                <div className="form-group">
+                                    <label>Price Per Day (₹)</label>
+                                    <div className="input-with-icon"><DollarSign />
+                                        <input type="number" name="pricePerDay" value={guideData.pricePerDay || ''} onChange={handleGuideChange} placeholder="e.g. 1000" required min="0" />
                                     </div>
                                 </div>
                             </div>
