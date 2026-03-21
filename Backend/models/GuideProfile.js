@@ -14,6 +14,7 @@ const guideProfileSchema = new mongoose.Schema({
         email: String
     },
     bio: { type: String },
+    profileImage: { type: String },
     pricePerDay: { type: Number, default: 500 }
 }, { timestamps: true });
 

@@ -45,6 +45,14 @@ const upsertGuideProfile = async (req, res) => {
         let profile = await GuideProfile.findOne({ user: req.user._id });
         
         const profileData = { ...req.body };
+        
+        if (typeof profileData.languagesSpoken === 'string') {
+            try { profileData.languagesSpoken = JSON.parse(profileData.languagesSpoken); } catch(e) {}
+        }
+        if (typeof profileData.areasOfExpertise === 'string') {
+            try { profileData.areasOfExpertise = JSON.parse(profileData.areasOfExpertise); } catch(e) {}
+        }
+        
         if (req.file) {
             profileData.profileImage = `/uploads/${req.file.filename}`;
         }
@@ -71,8 +79,25 @@ const upsertGuideProfile = async (req, res) => {
     }
 };
 
+// @desc    Get current guide profile
+// @route   GET /api/guides/profile
+// @access  Private (Guide)
+const getGuideProfile = async (req, res) => {
+    try {
+        const profile = await GuideProfile.findOne({ user: req.user._id });
+        if (profile) {
+            res.json(profile);
+        } else {
+            res.json(null);
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     getGuides,
     getGuideById,
+    getGuideProfile,
     upsertGuideProfile
 };

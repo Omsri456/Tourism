@@ -57,6 +57,7 @@ const Dashboard = () => {
     });
     const [guideMessage, setGuideMessage] = useState({ type: '', text: '' });
     const [guideLoading, setGuideLoading] = useState(false);
+    const [guideImage, setGuideImage] = useState(null);
 
     // ── My Bookings State (Tourist) ────────────────────────────────────────
     const [myBookings, setMyBookings] = useState([]);
@@ -66,6 +67,19 @@ const Dashboard = () => {
     const [reservations, setReservations] = useState([]);
     const [reservationsLoading, setReservationsLoading] = useState(false);
     const [statusUpdating, setStatusUpdating] = useState(null);
+
+    // ── Admin State ────────────────────────────────────────────────────────
+    const [adminStats, setAdminStats] = useState(null);
+    const [adminStatsLoading, setAdminStatsLoading] = useState(false);
+    
+    const [accData, setAccData] = useState({ name: '', details: '', type: 'Hotel', location: '', pricePerNight: '', rating: '5' });
+    const [accImage, setAccImage] = useState(null);
+    const [accLoading, setAccLoading] = useState(false);
+    const [accMessage, setAccMessage] = useState({ type: '', text: '' });
+
+    const [transData, setTransData] = useState({ type: 'Bus', route: '', price: '', schedule: '', description: '' });
+    const [transLoading, setTransLoading] = useState(false);
+    const [transMessage, setTransMessage] = useState({ type: '', text: '' });
 
     // ── Fetch data when tab changes ─────────────────────────────────────
     useEffect(() => {
@@ -78,7 +92,25 @@ const Dashboard = () => {
         if (activeTab === 'reservations' && (user?.role === 'Organizer' || user?.role === 'Guide' || user?.role === 'Admin')) {
             fetchReservations();
         }
+        if (activeTab === 'admin-overview' && user?.role === 'Admin') {
+            fetchAdminStats();
+        }
+        if (activeTab === 'guide-profile' && (user?.role === 'Guide' || user?.role === 'Admin')) {
+            fetchGuideProfile();
+        }
     }, [activeTab]);
+
+    const fetchAdminStats = async () => {
+        setAdminStatsLoading(true);
+        try {
+            const data = await fetchApi('/admin/stats');
+            setAdminStats(data);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setAdminStatsLoading(false);
+        }
+    };
 
     const fetchMyBookings = async () => {
         setBookingsLoading(true);
@@ -102,6 +134,29 @@ const Dashboard = () => {
             console.error(err);
         } finally {
             setReservationsLoading(false);
+        }
+    };
+
+    const fetchGuideProfile = async () => {
+        setGuideLoading(true);
+        try {
+            const data = await fetchApi('/guides/profile');
+            if (data) {
+                setGuideData({
+                    location: data.location || '',
+                    bio: data.bio || '',
+                    yearsOfExperience: data.yearsOfExperience || '',
+                    pricePerDay: data.pricePerDay || '',
+                    languagesSpoken: data.languagesSpoken ? data.languagesSpoken.join(', ') : '',
+                    areasOfExpertise: data.areasOfExpertise ? data.areasOfExpertise.join(', ') : '',
+                    phone: data.contactInfo?.phone || '',
+                    email: data.contactInfo?.email || '',
+                });
+            }
+        } catch (err) {
+            console.error('Failed to load profile', err);
+        } finally {
+            setGuideLoading(false);
         }
     };
 
@@ -204,29 +259,74 @@ const Dashboard = () => {
 
     // ── Guide Profile ─────────────────────────────────────────────────────
     const handleGuideChange = (e) => setGuideData({ ...guideData, [e.target.name]: e.target.value });
+    const handleGuideImageChange = (e) => setGuideImage(e.target.files[0]);
 
     const handleGuideSubmit = async (e) => {
         e.preventDefault();
         setGuideLoading(true);
         setGuideMessage({ type: '', text: '' });
         try {
-            const payload = {
-                ...guideData,
-                languagesSpoken: guideData.languagesSpoken.split(',').map(s => s.trim()).filter(Boolean),
-                areasOfExpertise: guideData.areasOfExpertise.split(',').map(s => s.trim()).filter(Boolean),
-                yearsOfExperience: Number(guideData.yearsOfExperience),
-                pricePerDay: Number(guideData.pricePerDay),
-                contactInfo: { phone: guideData.phone, email: guideData.email },
-            };
-            delete payload.phone;
-            delete payload.email;
+            const formData = new FormData();
+            formData.append('location', guideData.location);
+            formData.append('bio', guideData.bio);
+            formData.append('yearsOfExperience', Number(guideData.yearsOfExperience));
+            formData.append('pricePerDay', Number(guideData.pricePerDay));
+            formData.append('languagesSpoken', JSON.stringify(guideData.languagesSpoken.split(',').map(s => s.trim()).filter(Boolean)));
+            formData.append('areasOfExpertise', JSON.stringify(guideData.areasOfExpertise.split(',').map(s => s.trim()).filter(Boolean)));
+            formData.append('contactInfo', JSON.stringify({ phone: guideData.phone, email: guideData.email }));
+            if (guideImage) formData.append('profileImage', guideImage);
 
-            await fetchApi('/guides/profile', { method: 'POST', body: JSON.stringify(payload) });
+            await fetchApi('/guides/profile', { method: 'POST', body: formData });
             setGuideMessage({ type: 'success', text: 'Guide profile saved successfully!' });
+            setGuideImage(null);
         } catch (err) {
             setGuideMessage({ type: 'error', text: err.message || 'Failed to save profile' });
         } finally {
             setGuideLoading(false);
+        }
+    };
+
+    // ── Admin Handlers ────────────────────────────────────────────────────
+    const handleAccChange = (e) => setAccData({ ...accData, [e.target.name]: e.target.value });
+    const handleAccImage = (e) => setAccImage(e.target.files[0]);
+
+    const handleAccSubmit = async (e) => {
+        e.preventDefault();
+        setAccLoading(true);
+        setAccMessage({ type: '', text: '' });
+        try {
+            const formData = new FormData();
+            Object.keys(accData).forEach(key => formData.append(key, accData[key]));
+            if (accImage) formData.append('image', accImage);
+
+            await fetchApi('/accommodations', { method: 'POST', body: formData });
+            setAccMessage({ type: 'success', text: 'Accommodation added successfully!' });
+            setAccData({ name: '', details: '', type: 'Hotel', location: '', pricePerNight: '', rating: '5' });
+            setAccImage(null);
+        } catch (err) {
+            setAccMessage({ type: 'error', text: err.message || 'Failed to add accommodation' });
+        } finally {
+            setAccLoading(false);
+        }
+    };
+
+    const handleTransChange = (e) => setTransData({ ...transData, [e.target.name]: e.target.value });
+
+    const handleTransSubmit = async (e) => {
+        e.preventDefault();
+        setTransLoading(true);
+        setTransMessage({ type: '', text: '' });
+        try {
+            await fetchApi('/transport', { 
+                method: 'POST', 
+                body: JSON.stringify(transData) 
+            });
+            setTransMessage({ type: 'success', text: 'Transport route added successfully!' });
+            setTransData({ type: 'Bus', route: '', price: '', schedule: '', description: '' });
+        } catch (err) {
+            setTransMessage({ type: 'error', text: err.message || 'Failed to add transport' });
+        } finally {
+            setTransLoading(false);
         }
     };
 
@@ -273,6 +373,20 @@ const Dashboard = () => {
                         <button className={activeTab === 'guide-profile' ? 'active' : ''} onClick={() => setActiveTab('guide-profile')}>
                             <Activity /> Guide Profile
                         </button>
+                    )}
+                    {user.role === 'Admin' && (
+                        <>
+                            <div className="sidebar-divider">ADMIN CONTROLS</div>
+                            <button className={activeTab === 'admin-overview' ? 'active' : ''} onClick={() => setActiveTab('admin-overview')}>
+                                <Activity /> Platform Overview
+                            </button>
+                            <button className={activeTab === 'admin-accommodations' ? 'active' : ''} onClick={() => setActiveTab('admin-accommodations')}>
+                                <MapPin /> Add Accommodation
+                            </button>
+                            <button className={activeTab === 'admin-transport' ? 'active' : ''} onClick={() => setActiveTab('admin-transport')}>
+                                <Clock /> Add Transport
+                            </button>
+                        </>
                     )}
                 </nav>
             </aside>
@@ -728,8 +842,254 @@ const Dashboard = () => {
                                 </div>
                             </div>
 
+                            <div className="form-group">
+                                <label>Profile Image (Optional)</label>
+                                <div className="file-input-wrapper">
+                                    <input type="file" id="guide-image" onChange={handleGuideImageChange} accept="image/*" />
+                                    <label htmlFor="guide-image" className="file-input-label">
+                                        <Image /> {guideImage ? guideImage.name : 'Select a profile picture'}
+                                    </label>
+                                </div>
+                            </div>
+
                             <button type="submit" className="submit-btn" disabled={guideLoading}>
                                 {guideLoading ? 'Saving...' : 'Save Guide Profile'}
+                            </button>
+                        </form>
+                    </div>
+                )}
+
+                {/* ── Admin Overview Tab ── */}
+                {activeTab === 'admin-overview' && user?.role === 'Admin' && (
+                    <div className="dashboard-card admin-overview-card">
+                        <div className="admin-header">
+                            <h2>Platform Overview</h2>
+                            <p className="subtitle">Real-time statistics and activity for the Jharkhand Tourism Platform.</p>
+                        </div>
+                        
+                        {adminStatsLoading ? (
+                            <div className="loading-state">
+                                <Activity className="spin-icon" />
+                                <p>Gathering real-time statistics...</p>
+                            </div>
+                        ) : adminStats ? (
+                            <>
+                                <div className="admin-stats-grid">
+                                    <div className="admin-stat-card primary">
+                                        <div className="stat-icon-wrapper"><Users /></div>
+                                        <div className="stat-info">
+                                            <span className="stat-value">{adminStats.users}</span>
+                                            <span className="stat-label">Total Users</span>
+                                        </div>
+                                    </div>
+                                    <div className="admin-stat-card success">
+                                        <div className="stat-icon-wrapper"><BookOpen /></div>
+                                        <div className="stat-info">
+                                            <span className="stat-value">{adminStats.bookings}</span>
+                                            <span className="stat-label">Total Bookings</span>
+                                        </div>
+                                    </div>
+                                    <div className="admin-stat-card warning">
+                                        <div className="stat-icon-wrapper"><DollarSign /></div>
+                                        <div className="stat-info">
+                                            <span className="stat-value">₹{adminStats.totalRevenue?.toLocaleString() || 0}</span>
+                                            <span className="stat-label">Total Revenue</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <h3 className="section-title">Directory Listings</h3>
+                                <div className="admin-stats-grid secondary-grid">
+                                    <div className="admin-stat-card neutral">
+                                        <div className="stat-icon-wrapper"><Activity /></div>
+                                        <div className="stat-info">
+                                            <span className="stat-value">{adminStats.experiences}</span>
+                                            <span className="stat-label">Experiences</span>
+                                        </div>
+                                    </div>
+                                    <div className="admin-stat-card neutral">
+                                        <div className="stat-icon-wrapper"><List /></div>
+                                        <div className="stat-info">
+                                            <span className="stat-value">{adminStats.accommodations}</span>
+                                            <span className="stat-label">Stays</span>
+                                        </div>
+                                    </div>
+                                    <div className="admin-stat-card neutral">
+                                        <div className="stat-icon-wrapper"><Clock /></div>
+                                        <div className="stat-info">
+                                            <span className="stat-value">{adminStats.transports}</span>
+                                            <span className="stat-label">Routes</span>
+                                        </div>
+                                    </div>
+                                    <div className="admin-stat-card neutral">
+                                        <div className="stat-icon-wrapper"><MapPin /></div>
+                                        <div className="stat-info">
+                                            <span className="stat-value">{adminStats.destinations}</span>
+                                            <span className="stat-label">Destinations</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <h3 className="section-title">Recent Activity</h3>
+                                {adminStats.recentBookings?.length > 0 ? (
+                                    <div className="recent-activity-list">
+                                        {adminStats.recentBookings.map(b => (
+                                            <div key={b._id} className="activity-item">
+                                                <div className="activity-avatar">
+                                                    <User size={16} />
+                                                </div>
+                                                <div className="activity-details">
+                                                    <p>
+                                                        <strong>{b.tourist?.name || 'Tourist'}</strong> booked 
+                                                        {" "}<span className="highlight-text">{b.experience?.title || b.guide?.user?.name || 'an event'}</span>
+                                                    </p>
+                                                    <span className="activity-time">{new Date(b.createdAt).toLocaleDateString()}</span>
+                                                </div>
+                                                <div className="activity-status">
+                                                    <span className={`status-badge ${b.status}`}>{b.status}</span>
+                                                    <span className="activity-price">₹{b.totalPrice}</span>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="empty-state">
+                                        <ClipboardList size={40} />
+                                        <p>No recent bookings found.</p>
+                                    </div>
+                                )}
+                            </>
+                        ) : null}
+                    </div>
+                )}
+
+                {/* ── Admin Add Accommodation Tab ── */}
+                {activeTab === 'admin-accommodations' && user?.role === 'Admin' && (
+                    <div className="dashboard-card">
+                        <h2>Add Accommodation</h2>
+                        <p className="subtitle">List a new hotel, homestay, or resort on the platform.</p>
+
+                        {accMessage.text && (
+                            <div className={`status-message ${accMessage.type}`}>
+                                {accMessage.type === 'success' ? <CheckCircle /> : <AlertCircle />}
+                                {accMessage.text}
+                            </div>
+                        )}
+
+                        <form className="dashboard-form" onSubmit={handleAccSubmit}>
+                            <div className="form-row">
+                                <div className="form-group">
+                                    <label>Accommodation Name</label>
+                                    <div className="input-with-icon"><Activity />
+                                        <input type="text" name="name" value={accData.name} onChange={handleAccChange} placeholder="e.g. The Royal Residency" required />
+                                    </div>
+                                </div>
+                                <div className="form-group">
+                                    <label>Type</label>
+                                    <div className="input-with-icon"><List />
+                                        <select name="type" value={accData.type} onChange={handleAccChange}>
+                                            <option value="Hotel">Hotel</option>
+                                            <option value="Hostel">Hostel</option>
+                                            <option value="Homestay">Homestay</option>
+                                            <option value="Resort">Resort</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="form-row">
+                                <div className="form-group">
+                                    <label>Location</label>
+                                    <div className="input-with-icon"><MapPin />
+                                        <input type="text" name="location" value={accData.location} onChange={handleAccChange} placeholder="e.g. Ranchi" required />
+                                    </div>
+                                </div>
+                                <div className="form-group">
+                                    <label>Price Per Night (₹)</label>
+                                    <div className="input-with-icon"><DollarSign />
+                                        <input type="number" name="pricePerNight" value={accData.pricePerNight} onChange={handleAccChange} placeholder="e.g. 2000" required />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="form-group">
+                                <label>Details / Description</label>
+                                <textarea name="details" value={accData.details} onChange={handleAccChange} placeholder="Describe the accommodation and amenities..." rows="4" required />
+                            </div>
+
+                            <div className="form-group">
+                                <label>Cover Image</label>
+                                <div className="file-input-wrapper">
+                                    <input type="file" id="acc-image" onChange={handleAccImage} accept="image/*" required />
+                                    <label htmlFor="acc-image" className="file-input-label">
+                                        <Image /> {accImage ? accImage.name : 'Choose cover image...'}
+                                    </label>
+                                </div>
+                            </div>
+
+                            <button type="submit" className="submit-btn" disabled={accLoading}>
+                                {accLoading ? 'Publishing...' : 'Publish Accommodation'}
+                            </button>
+                        </form>
+                    </div>
+                )}
+
+                {/* ── Admin Add Transport Tab ── */}
+                {activeTab === 'admin-transport' && user?.role === 'Admin' && (
+                    <div className="dashboard-card">
+                        <h2>Add Transport Route</h2>
+                        <p className="subtitle">Add a new bus, train, or cab service route.</p>
+
+                        {transMessage.text && (
+                            <div className={`status-message ${transMessage.type}`}>
+                                {transMessage.type === 'success' ? <CheckCircle /> : <AlertCircle />}
+                                {transMessage.text}
+                            </div>
+                        )}
+
+                        <form className="dashboard-form" onSubmit={handleTransSubmit}>
+                            <div className="form-row">
+                                <div className="form-group">
+                                    <label>Transport Type</label>
+                                    <div className="input-with-icon"><Activity />
+                                        <select name="type" value={transData.type} onChange={handleTransChange}>
+                                            <option value="Bus">Bus</option>
+                                            <option value="Flight">Flight</option>
+                                            <option value="Train">Train</option>
+                                            <option value="Cab">Cab</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className="form-group">
+                                    <label>Route</label>
+                                    <div className="input-with-icon"><MapPin />
+                                        <input type="text" name="route" value={transData.route} onChange={handleTransChange} placeholder="e.g. Ranchi to Netarhat" required />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="form-row">
+                                <div className="form-group">
+                                    <label>Schedule (Frequency/Time)</label>
+                                    <div className="input-with-icon"><Clock />
+                                        <input type="text" name="schedule" value={transData.schedule} onChange={handleTransChange} placeholder="e.g. Daily 8:00 AM" required />
+                                    </div>
+                                </div>
+                                <div className="form-group">
+                                    <label>Estimated Price (₹)</label>
+                                    <div className="input-with-icon"><DollarSign />
+                                        <input type="number" name="price" value={transData.price} onChange={handleTransChange} placeholder="e.g. 500" required />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="form-group">
+                                <label>Description / Details</label>
+                                <textarea name="description" value={transData.description} onChange={handleTransChange} placeholder="e.g. AC Volvo seater, pickup from Main Station..." rows="3" required />
+                            </div>
+
+                            <button type="submit" className="submit-btn" disabled={transLoading}>
+                                {transLoading ? 'Publishing...' : 'Publish Transport'}
                             </button>
                         </form>
                     </div>
