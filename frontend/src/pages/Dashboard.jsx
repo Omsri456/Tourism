@@ -95,7 +95,7 @@ const Dashboard = () => {
         if (activeTab === 'admin-overview' && user?.role === 'Admin') {
             fetchAdminStats();
         }
-        if (activeTab === 'guide-profile' && (user?.role === 'Guide' || user?.role === 'Admin')) {
+        if ((activeTab === 'guide-profile' || activeTab === 'profile') && (user?.role === 'Guide' || user?.role === 'Admin')) {
             fetchGuideProfile();
         }
     }, [activeTab]);
@@ -151,6 +151,7 @@ const Dashboard = () => {
                     areasOfExpertise: data.areasOfExpertise ? data.areasOfExpertise.join(', ') : '',
                     phone: data.contactInfo?.phone || '',
                     email: data.contactInfo?.email || '',
+                    profileImage: data.profileImage || '',
                 });
             }
         } catch (err) {
@@ -396,14 +397,35 @@ const Dashboard = () => {
 
                 {/* ── Profile Tab ── */}
                 {activeTab === 'profile' && (
-                    <div className="dashboard-card">
-                        <h2>Profile Overview</h2>
-                        <p className="subtitle">Your account details and role information</p>
-                        <div className="profile-info-grid">
-                            <div className="info-item"><label><User /> Full Name</label><p>{user.name}</p></div>
-                            <div className="info-item"><label><Mail /> Email Address</label><p>{user.email}</p></div>
-                            <div className="info-item"><label><CheckCircle /> Account Status</label><p>Verified</p></div>
-                            <div className="info-item"><label><MapPin /> Member Since</label><p>{new Date().getFullYear()}</p></div>
+                    <div className="dashboard-card profile-enhanced-card">
+                        <div className="profile-enhanced-header">
+                            <div className="profile-enhanced-avatar">
+                                {guideData.profileImage ? (
+                                    <img src={guideData.profileImage} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+                                ) : (
+                                    <span>{user.name?.charAt(0).toUpperCase()}</span>
+                                )}
+                            </div>
+                            <div className="profile-enhanced-titles">
+                                <h2>{user.name}</h2>
+                                <span className="profile-enhanced-role">{user.role}</span>
+                                <p className="profile-enhanced-email"><Mail size={14} /> {user.email}</p>
+                            </div>
+                        </div>
+
+                        <div className="profile-info-grid" style={{ marginTop: '2rem' }}>
+                            <div className="info-item">
+                                <label><CheckCircle className="icon-success" /> Account Status</label>
+                                <p className="status-verified">Verified Member</p>
+                            </div>
+                            <div className="info-item">
+                                <label><MapPin className="icon-primary" /> Member Since</label>
+                                <p>January {new Date().getFullYear()}</p>
+                            </div>
+                            <div className="info-item">
+                                <label><Activity className="icon-warning" /> Permissions</label>
+                                <p>Standard {user.role} Access</p>
+                            </div>
                         </div>
                     </div>
                 )}
@@ -467,64 +489,88 @@ const Dashboard = () => {
                     </div>
                 )}
 
-                {/* ── Reservations Tab (Organizer) ── */}
+                {/* ── Reservations / Client Bookings Tab (Organizer / Guide) ── */}
                 {activeTab === 'reservations' && (
                     <div className="dashboard-card">
-                        <h2>Reservations</h2>
-                        <p className="subtitle">Tourists who have booked your experiences</p>
+                        <h2>{user.role === 'Guide' ? 'Client Bookings' : 'Reservations'}</h2>
+                        <p className="subtitle">
+                            {user.role === 'Guide' 
+                                ? 'Tourists who have requested your guide services' 
+                                : 'Tourists who have booked your experiences'}
+                        </p>
 
-                        {reservationsLoading && <p style={{ color: '#94a3b8', textAlign: 'center', padding: '2rem' }}>Loading reservations...</p>}
+                        {reservationsLoading && <p style={{ color: '#94a3b8', textAlign: 'center', padding: '2rem' }}>Loading records...</p>}
 
                         {!reservationsLoading && reservations.length === 0 && (
                             <div className="empty-state">
                                 <ClipboardList size={52} />
-                                <h3>No reservations yet</h3>
-                                <p>When tourists book your experiences, they'll appear here.</p>
+                                <h3>No clients yet</h3>
+                                <p>When tourists book with you, their requests will appear here.</p>
                             </div>
                         )}
 
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        <div className="reservations-grid">
                             {reservations.map(booking => (
-                                <div key={booking._id} className="booking-list-card">
-                                    <div className="booking-list-info">
-                                        <h4>{booking.experience?.title || 'Tour Guide Booking'}</h4>
-                                        <p>
-                                            <User size={13} /> {booking.tourist?.name}
-                                            &nbsp;·&nbsp;
-                                            <Calendar size={13} /> {new Date(booking.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
-                                            &nbsp;·&nbsp;
-                                            <Users size={13} /> {booking.numberOfPeople} {booking.numberOfPeople === 1 ? 'person' : 'people'}
-                                        </p>
-                                        <p style={{ marginTop: '0.25rem' }}>
-                                            <DollarSign size={13} /> Total: &#8377;{booking.totalPrice}
-                                            {booking.specialRequests && <>&nbsp;·&nbsp; Note: "{booking.specialRequests}"</>}
-                                        </p>
-                                    </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'flex-end' }}>
-                                        <span className={`booking-status-badge status-${booking.status}`}>
-                                            {booking.status === 'pending' && '🟡 Pending'}
-                                            {booking.status === 'confirmed' && '🟢 Confirmed'}
-                                            {booking.status === 'cancelled' && '🔴 Cancelled'}
+                                <div key={booking._id} className="reservation-ticket">
+                                    <div className="ticket-header">
+                                        <div className="tourist-info">
+                                            <div className="tourist-avatar">
+                                                <User size={16} />
+                                            </div>
+                                            <div>
+                                                <h4>{booking.tourist?.name || 'Tourist'}</h4>
+                                                <span className="tourist-email">{booking.tourist?.email}</span>
+                                            </div>
+                                        </div>
+                                        <span className={`status-pill status-${booking.status}`}>
+                                            {booking.status.toUpperCase()}
                                         </span>
-                                        {booking.status === 'pending' && (
-                                            <div style={{ display: 'flex', gap: '0.4rem' }}>
-                                                <button
-                                                    className="btn-edit"
-                                                    disabled={statusUpdating === booking._id}
-                                                    onClick={() => handleReservationStatus(booking._id, 'confirmed')}
-                                                >
-                                                    <CheckCircle size={13} /> Confirm
-                                                </button>
-                                                <button
-                                                    className="btn-delete"
-                                                    disabled={statusUpdating === booking._id}
-                                                    onClick={() => handleReservationStatus(booking._id, 'cancelled')}
-                                                >
-                                                    <X size={13} /> Cancel
-                                                </button>
+                                    </div>
+                                    
+                                    <div className="ticket-body">
+                                        <div className="ticket-detail-row">
+                                            <span className="ticket-label"><Calendar size={14} /> Date</span>
+                                            <span className="ticket-value">{new Date(booking.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                                        </div>
+                                        <div className="ticket-detail-row">
+                                            <span className="ticket-label"><Users size={14} /> Group Size</span>
+                                            <span className="ticket-value">{booking.numberOfPeople} Guests</span>
+                                        </div>
+                                        <div className="ticket-detail-row">
+                                            <span className="ticket-label"><DollarSign size={14} /> Total Pay</span>
+                                            <span className="ticket-value highlight-price">&#8377;{booking.totalPrice}</span>
+                                        </div>
+                                        {booking.experience && (
+                                            <div className="ticket-detail-row full-width">
+                                                <span className="ticket-label"><MapPin size={14} /> Experience</span>
+                                                <span className="ticket-value">{booking.experience.title}</span>
+                                            </div>
+                                        )}
+                                        {booking.specialRequests && (
+                                            <div className="ticket-notes">
+                                                <strong>Note:</strong> {booking.specialRequests}
                                             </div>
                                         )}
                                     </div>
+
+                                    {booking.status === 'pending' && (
+                                        <div className="ticket-actions">
+                                            <button
+                                                className="btn-accept"
+                                                disabled={statusUpdating === booking._id}
+                                                onClick={() => handleReservationStatus(booking._id, 'confirmed')}
+                                            >
+                                                <CheckCircle size={16} /> Accept Booking
+                                            </button>
+                                            <button
+                                                className="btn-decline"
+                                                disabled={statusUpdating === booking._id}
+                                                onClick={() => handleReservationStatus(booking._id, 'cancelled')}
+                                            >
+                                                <X size={16} /> Decline
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                             ))}
                         </div>
