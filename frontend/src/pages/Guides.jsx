@@ -55,9 +55,15 @@ const Guides = () => {
     }
   };
 
+  const getValidImage = (img, fallback) => {
+    if (!img || img === 'null' || img === 'undefined' || img.trim() === '') return fallback;
+    if (img.startsWith('/uploads')) return `http://localhost:5000${img}`;
+    return img;
+  };
+
   return (
     <div className="directory-page">
-      <div className="directory-header" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1533240332313-0bc499fbf7cb?auto=format&fit=crop&q=80')" }}>
+      <div className="directory-header" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1516738901171-8eb4fc13bd20?auto=format&fit=crop&q=80')" }}>
         <div className="directory-icon-bg"><UserCheck size={40} /></div>
         <h1 className="section-title">Verified Local Guides</h1>
         <p className="section-subtitle">Connect with trustworthy and experienced locals who know the land best.</p>
@@ -77,7 +83,7 @@ const Guides = () => {
              <div key={guide._id} className="dir-card glass-card" style={{ textAlign: 'center' }}>
                 <div style={{ padding: '2rem 2rem 0', position: 'relative' }}>
                    <div style={{ width: '120px', height: '120px', borderRadius: '50%', margin: '0 auto', overflow: 'hidden', border: '4px solid var(--color-surface)', boxShadow: 'var(--shadow-md)' }}>
-                      <img src={guide.profileImage || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80'} alt={guide.user?.name || 'Guide'} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <img src={getValidImage(guide.profileImage, 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80')} alt={guide.user?.name || 'Guide'} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                    </div>
                  <span style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', color: 'var(--color-primary)' }}><Award size={28} /></span>
               </div>
