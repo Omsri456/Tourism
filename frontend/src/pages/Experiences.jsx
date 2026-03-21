@@ -66,7 +66,7 @@ const Experiences = () => {
 
   return (
     <div className="directory-page">
-      <div className="directory-header">
+      <div className="directory-header" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&q=80')" }}>
         <div className="directory-icon-bg"><Music size={40} /></div>
         <h1 className="section-title">Cultural Experiences</h1>
         <p className="section-subtitle">Immerse yourself in the rich tribal traditions, dances, and art of Jharkhand.</p>

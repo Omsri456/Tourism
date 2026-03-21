@@ -446,45 +446,71 @@ const Dashboard = () => {
                             </div>
                         )}
 
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                            {myBookings.map(booking => (
-                                <div key={booking._id} className="booking-list-card">
-                                    <div className="booking-list-info">
-                                        <h4>
-                                            {booking.bookingType === 'guide' 
-                                                ? `Guide Booking: ${booking.guide?.user?.name || 'Local Guide'}` 
-                                                : booking.experience?.title || 'Experience'}
-                                        </h4>
-                                        <p>
-                                            <Calendar size={13} /> {new Date(booking.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
-                                            &nbsp;·&nbsp;
-                                            <Users size={13} /> {booking.numberOfPeople} {booking.numberOfPeople === 1 ? 'person' : 'people'}
-                                            &nbsp;·&nbsp;
-                                            <DollarSign size={13} /> &#8377;{booking.totalPrice}
-                                        </p>
-                                        {booking.bookingType === 'experience' && booking.experience?.location && (
-                                            <p><MapPin size={12} /> Location: {booking.experience.location}</p>
-                                        )}
-                                        {booking.bookingType === 'guide' && booking.guide && (
-                                            <div style={{ marginTop: '0.4rem', padding: '0.5rem', background: '#f8fafc', borderRadius: '6px', fontSize: '0.85rem' }}>
-                                                <strong>Contact Info:</strong>
-                                                {booking.guide.contactInfo?.phone && <div><User size={12}/> Phone: {booking.guide.contactInfo.phone}</div>}
-                                                {booking.guide.contactInfo?.email && <div><Mail size={12}/> Email: {booking.guide.contactInfo.email}</div>}
+                        <div className="reservations-grid">
+                            {myBookings.map(booking => {
+                                const isGuide = booking.bookingType === 'guide';
+                                const itemTitle = isGuide 
+                                    ? `Guide: ${booking.guide?.user?.name || 'Local Guide'}` 
+                                    : booking.experience?.title || 'Cultural Experience';
+                                const itemIcon = isGuide ? <User size={16} /> : <MapPin size={16} />;
+
+                                return (
+                                <div key={booking._id} className="reservation-ticket">
+                                    <div className="ticket-header">
+                                        <div className="tourist-info">
+                                            <div className="tourist-avatar" style={{ background: isGuide ? '#fef3c7' : '#e0e7ff', color: isGuide ? '#d97706' : '#4f46e5' }}>
+                                                {itemIcon}
+                                            </div>
+                                            <div>
+                                                <h4>{itemTitle}</h4>
+                                                <span className="tourist-email">{isGuide ? 'Guide Booking' : 'Experience Booking'}</span>
+                                            </div>
+                                        </div>
+                                        <span className={`status-pill status-${booking.status}`}>
+                                            {booking.status.toUpperCase()}
+                                        </span>
+                                    </div>
+                                    
+                                    <div className="ticket-body">
+                                        <div className="ticket-detail-row">
+                                            <span className="ticket-label"><Calendar size={14} /> Date</span>
+                                            <span className="ticket-value">{new Date(booking.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                                        </div>
+                                        <div className="ticket-detail-row">
+                                            <span className="ticket-label"><Users size={14} /> Group Size</span>
+                                            <span className="ticket-value">{booking.numberOfPeople} Guests</span>
+                                        </div>
+                                        <div className="ticket-detail-row">
+                                            <span className="ticket-label"><DollarSign size={14} /> Total Paid</span>
+                                            <span className="ticket-value highlight-price">&#8377;{booking.totalPrice}</span>
+                                        </div>
+                                        
+                                        {!isGuide && booking.experience?.location && (
+                                            <div className="ticket-detail-row full-width">
+                                                <span className="ticket-label"><MapPin size={14} /> Location</span>
+                                                <span className="ticket-value">{booking.experience.location}</span>
                                             </div>
                                         )}
+
+                                        {isGuide && booking.guide && (
+                                            <div className="ticket-detail-row full-width" style={{ marginTop: '0.4rem' }}>
+                                                <span className="ticket-label"><Activity size={14} /> Contact Guide</span>
+                                                <span className="ticket-value" style={{ fontSize: '0.85rem' }}>
+                                                    {booking.guide.contactInfo?.phone && <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><User size={12}/> {booking.guide.contactInfo.phone}</div>}
+                                                    {booking.guide.contactInfo?.email && <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}><Mail size={12}/> {booking.guide.contactInfo.email}</div>}
+                                                </span>
+                                            </div>
+                                        )}
+
                                         {booking.specialRequests && (
-                                            <p style={{ marginTop: '0.5rem', fontStyle: 'italic', fontSize: '0.85rem', color: '#64748b' }}>
-                                                <strong>Notes:</strong> "{booking.specialRequests}"
-                                            </p>
+                                            <div className="ticket-notes">
+                                                <strong>Notes to Host:</strong> {booking.specialRequests}
+                                            </div>
                                         )}
                                     </div>
-                                    <span className={`booking-status-badge status-${booking.status}`}>
-                                        {booking.status === 'pending' && '🟡 Pending'}
-                                        {booking.status === 'confirmed' && '🟢 Confirmed'}
-                                        {booking.status === 'cancelled' && '🔴 Cancelled'}
-                                    </span>
                                 </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     </div>
                 )}

@@ -36,7 +36,7 @@ const Destinations = () => {
 
   return (
     <div className="destinations-page">
-      <div className="page-header">
+      <div className="directory-header" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1506461883276-594a12b11dc3?auto=format&fit=crop&q=80')" }}>
         <h1 className="section-title">Explore Jharkhand</h1>
         <p className="section-subtitle">Discover hidden gems, cascading waterfalls, and dense forests.</p>
         

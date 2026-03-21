@@ -57,7 +57,7 @@ const Guides = () => {
 
   return (
     <div className="directory-page">
-      <div className="directory-header">
+      <div className="directory-header" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1533240332313-0bc499fbf7cb?auto=format&fit=crop&q=80')" }}>
         <div className="directory-icon-bg"><UserCheck size={40} /></div>
         <h1 className="section-title">Verified Local Guides</h1>
         <p className="section-subtitle">Connect with trustworthy and experienced locals who know the land best.</p>

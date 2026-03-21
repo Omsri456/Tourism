@@ -10,8 +10,8 @@ const Home = () => {
       <section className="hero-section">
         <div className="hero-overlay"></div>
         <img 
-          src="https://images.unsplash.com/photo-1543085698-500e2bcaa8e3?auto=format&fit=crop&q=80" 
-          alt="Hundru Falls Jharkhand" 
+          src="https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&q=80" 
+          alt="Beautiful Nature" 
           className="hero-image"
         />
         <div className="hero-content">

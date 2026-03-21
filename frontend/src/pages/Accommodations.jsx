@@ -31,7 +31,7 @@ const Accommodations = () => {
 
   return (
     <div className="directory-page">
-      <div className="directory-header">
+      <div className="directory-header" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&q=80')" }}>
         <div className="directory-icon-bg"><Home size={40} /></div>
         <h1 className="section-title">Accommodation Finder</h1>
         <p className="section-subtitle">Discover comfortable stays, from premium hotels to rustic tribal homestays.</p>

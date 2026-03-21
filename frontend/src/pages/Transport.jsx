@@ -34,7 +34,7 @@ const Transport = () => {
 
   return (
     <div className="directory-page">
-      <div className="directory-header">
+      <div className="directory-header" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80')" }}>
         <div className="directory-icon-bg"><Map size={40} /></div>
         <h1 className="section-title">Local Transport Info</h1>
         <p className="section-subtitle">Find the best routes and modes of transport across Jharkhand.</p>
