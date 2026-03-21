@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Search, MapPin, Filter, Star } from 'lucide-react';
 import { fetchApi } from '../api';
 import ReviewModal from '../components/ReviewModal';
+import './Directory.css';
 import './Destinations.css';
 
 const Destinations = () => {
@@ -38,9 +39,17 @@ const Destinations = () => {
     return matchesCategory && matchesSearch;
   });
 
+  const getValidImage = (imgArray, fallback) => {
+    if (!imgArray || !imgArray.length) return fallback;
+    const img = imgArray[0];
+    if (!img || img === 'null' || img === 'undefined' || img.trim() === '') return fallback;
+    if (img.startsWith('/uploads')) return `http://localhost:5000${img}`;
+    return img;
+  };
+
   return (
     <div className="destinations-page">
-      <div className="page-header">
+      <div className="directory-header" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1506461883276-594a12b11dc3?auto=format&fit=crop&q=80')" }}>
         <h1 className="section-title">Explore Jharkhand</h1>
         <p className="section-subtitle">Discover hidden gems, cascading waterfalls, and dense forests.</p>
         
@@ -80,7 +89,7 @@ const Destinations = () => {
           filteredDestinations.map(dest => (
             <div key={dest._id} className="dest-card glass-card">
               <div className="dest-image-wrapper">
-                <img src={dest.images?.[0] || 'https://images.unsplash.com/photo-1543085698-500e2bcaa8e3?auto=format&fit=crop&q=80'} alt={dest.name} className="dest-image" />
+                <img src={getValidImage(dest.images, 'https://images.unsplash.com/photo-1543085698-500e2bcaa8e3?auto=format&fit=crop&q=80')} alt={dest.name} className="dest-image" />
                 <span className="dest-badge">{dest.category}</span>
               </div>
               <div className="dest-info">

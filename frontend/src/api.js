@@ -22,7 +22,14 @@ export const fetchApi = async (endpoint, options = {}) => {
     });
 
     if (!response.ok) {
-      throw new Error(`API error: ${response.status} ${response.statusText}`);
+      let errorMsg = `API error: ${response.status} ${response.statusText}`;
+      try {
+        const errData = await response.json();
+        if (errData.message) errorMsg = errData.message;
+      } catch (e) {
+        // Not JSON, ignore
+      }
+      throw new Error(errorMsg);
     }
 
     // Attempt to parse JSON; fallback if not JSON
