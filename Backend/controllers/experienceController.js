@@ -65,7 +65,7 @@ const createExperience = async (req, res) => {
         
         // If an image was uploaded, add its path to the images array
         if (req.file) {
-            experienceData.images = [`/uploads/${req.file.filename}`];
+            experienceData.images = [req.file.path];
         }
 
         const experience = new CulturalExperience(experienceData);
@@ -103,7 +103,7 @@ const updateExperience = async (req, res) => {
 
         // If a new image was uploaded, replace the images array
         if (req.file) {
-            experience.images = [`/uploads/${req.file.filename}`];
+            experience.images = [req.file.path];
         }
 
         const updatedExperience = await experience.save();

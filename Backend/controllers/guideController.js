@@ -54,7 +54,7 @@ const upsertGuideProfile = async (req, res) => {
         }
         
         if (req.file) {
-            profileData.profileImage = `/uploads/${req.file.filename}`;
+            profileData.profileImage = req.file.path;
         }
 
         if (profile) {

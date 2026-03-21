@@ -46,7 +46,11 @@ const getAccommodationById = async (req, res) => {
 // @access  Private/Admin
 const createAccommodation = async (req, res) => {
     try {
-        const accommodation = new Accommodation(req.body);
+        const accData = { ...req.body };
+        if (req.file) {
+            accData.images = [req.file.path];
+        }
+        const accommodation = new Accommodation(accData);
         const createdAccommodation = await accommodation.save();
         res.status(201).json(createdAccommodation);
     } catch (error) {
