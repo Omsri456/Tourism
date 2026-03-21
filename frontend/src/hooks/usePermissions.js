@@ -17,17 +17,22 @@ const usePermissions = () => {
         // --- Booking Experiences ---
         // Tourists can book. Guides can book (they're people too).
         // Organizers CANNOT book — they create experiences, not attend them as paying guests.
+        // Admins CANNOT book — they manage the platform, not use it as customers.
         canBookExperience: role === 'Tourist' || role === 'Guide',
 
         // --- Booking Guides ---
         // Tourists and Organizers can book a guide.
         // Guides CANNOT book other guides (no real use case).
+        // Admins CANNOT book.
         canBookGuide: role === 'Tourist' || role === 'Organizer',
 
+        // --- Booking Stays (Hotels, Homestays) ---
+        // Tourists and Guides can book stays.
+        // Admins CANNOT book stays — they add and manage them.
+        canBookStay: role === 'Tourist' || role === 'Guide',
+
         // --- Writing Reviews ---
-        // Only Tourists can write reviews. 
-        // Organizers cannot review (conflict of interest).
-        // Guides cannot review experiences (they are service providers).
+        // Only Tourists can write reviews.
         canWriteReview: role === 'Tourist',
 
         // --- Creating Content ---
@@ -39,6 +44,7 @@ const usePermissions = () => {
 
         // --- Auth state ---
         isLoggedIn: !!user,
+        isAdmin: role === 'Admin',
         role,
         user,
     };

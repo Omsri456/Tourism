@@ -11,7 +11,7 @@ const Accommodations = () => {
   const [error, setError] = useState(null);
   const [filterType, setFilterType] = useState('All');
 
-  const { isLoggedIn } = usePermissions();
+  const { isLoggedIn, canBookStay, isAdmin } = usePermissions();
 
   // Booking Modal State
   const [selectedStay, setSelectedStay] = useState(null);
@@ -128,13 +128,15 @@ const Accommodations = () => {
                  </div>
                  
                  <div style={{ marginTop: '1rem' }}>
-                    {!isLoggedIn ? (
+                    {isAdmin ? (
+                      <div style={{ textAlign: 'center', padding: '0.6rem', borderRadius: '8px', background: '#f1f5f9', color: '#64748b', fontSize: '0.85rem', fontWeight: 600 }}>Admin View Only</div>
+                    ) : !isLoggedIn ? (
                       <Link to="/login" className="btn-primary" style={{ width: '100%', justifyContent: 'center', display: 'flex', alignItems: 'center', gap: '0.4rem', textDecoration: 'none' }}>
                         <Lock size={14} /> Login to Book
                       </Link>
-                    ) : (
+                    ) : canBookStay ? (
                       <button className="btn-primary" style={{ width: '100%', justifyContent: 'center' }} onClick={() => { setSelectedStay(stay); setBookingMessage({ type: '', text: '' }); }}>Book Now</button>
-                    )}
+                    ) : null}
                  </div>
               </div>
            </div>

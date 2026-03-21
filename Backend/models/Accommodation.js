@@ -5,10 +5,11 @@ const accommodationSchema = new mongoose.Schema({
     type: { 
         type: String, 
         required: true,
-        enum: ['Hotel', 'Guest House', 'Homestay', 'Eco-lodge', 'Tribal Homestay', 'Other']
+        enum: ['Hotel', 'Resort', 'Guest House', 'Homestay', 'Eco-lodge', 'Tribal Homestay', 'Other']
     },
     location: { type: String, required: true },
     pricePerNight: { type: Number, required: true },
+    images: [{ type: String }],
     facilities: [{ type: String }],
     contactInfo: {
         phone: String,
