@@ -1,22 +1,26 @@
 const Booking = require('../models/Booking');
 const CulturalExperience = require('../models/CulturalExperience');
 const GuideProfile = require('../models/GuideProfile');
+const Accommodation = require('../models/Accommodation');
 
 // @desc    Create a new booking
 // @route   POST /api/bookings
 // @access  Private (Tourist/Guide — not Organizer)
 const createBooking = async (req, res) => {
     try {
-        const { bookingType, experienceId, guideId, date, numberOfPeople, specialRequests } = req.body;
+        const { bookingType, experienceId, guideId, accommodationId, date, checkInDate, checkOutDate, numberOfPeople, specialRequests } = req.body;
 
         let totalPrice = 0;
         let bookingData = {
             tourist: req.user._id,
             bookingType,
-            date,
             numberOfPeople: Number(numberOfPeople),
             specialRequests: specialRequests || '',
         };
+
+        if (date) bookingData.date = date;
+        if (checkInDate) bookingData.checkInDate = checkInDate;
+        if (checkOutDate) bookingData.checkOutDate = checkOutDate;
 
         if (bookingType === 'experience') {
             if (!experienceId) return res.status(400).json({ message: 'Experience ID is required' });
@@ -32,6 +36,22 @@ const createBooking = async (req, res) => {
             
             totalPrice = Number(numberOfPeople) * (guide.pricePerDay || 500);
             bookingData.guide = guideId;
+        } else if (bookingType === 'accommodation') {
+            if (!accommodationId) return res.status(400).json({ message: 'Accommodation ID is required' });
+            if (!checkInDate || !checkOutDate) return res.status(400).json({ message: 'Check-in and check-out dates are required' });
+            
+            const accommodation = await Accommodation.findById(accommodationId);
+            if (!accommodation) return res.status(404).json({ message: 'Accommodation not found' });
+            
+            // Calculate nights
+            const checkIn = new Date(checkInDate);
+            const checkOut = new Date(checkOutDate);
+            const nights = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
+            
+            if (nights <= 0) return res.status(400).json({ message: 'Check-out date must be strictly after check-in date' });
+            
+            totalPrice = nights * accommodation.pricePerNight; // Price is per night, regardless of guests (optional multiplier here if user wants per guest)
+            bookingData.accommodation = accommodationId;
         } else {
             return res.status(400).json({ message: 'Invalid booking type' });
         }
@@ -56,6 +76,7 @@ const getMyBookings = async (req, res) => {
                 path: 'guide',
                 populate: { path: 'user', select: 'name' }
             })
+            .populate('accommodation', 'name type location images pricePerNight')
             .sort({ createdAt: -1 });
         res.json(bookings);
     } catch (error) {

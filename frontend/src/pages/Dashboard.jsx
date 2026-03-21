@@ -18,6 +18,9 @@ import {
   Edit2,
   Trash2,
   X,
+  Map,
+  Home,
+  Star,
   BookOpen,
   ClipboardList,
   Clock,
@@ -449,21 +452,44 @@ const Dashboard = () => {
                         <div className="reservations-grid">
                             {myBookings.map(booking => {
                                 const isGuide = booking.bookingType === 'guide';
-                                const itemTitle = isGuide 
-                                    ? `Guide: ${booking.guide?.user?.name || 'Local Guide'}` 
-                                    : booking.experience?.title || 'Cultural Experience';
-                                const itemIcon = isGuide ? <User size={16} /> : <MapPin size={16} />;
+                                const isAccommodation = booking.bookingType === 'accommodation';
+                                
+                                let itemTitle = 'Reservation';
+                                let itemIcon = <Calendar size={16} />;
+                                let subtitle = 'Booking';
+                                let bgColor = '#e0e7ff';
+                                let iconColor = '#4f46e5';
+
+                                if (isGuide) {
+                                    itemTitle = `Guide: ${booking.guide?.user?.name || 'Local Guide'}`;
+                                    itemIcon = <User size={16} />;
+                                    subtitle = 'Guide Booking';
+                                    bgColor = '#fef3c7';
+                                    iconColor = '#d97706';
+                                } else if (isAccommodation) {
+                                    itemTitle = booking.accommodation?.name || 'Stay Booking';
+                                    itemIcon = <Home size={16} />;
+                                    subtitle = 'Hotel / Homestay';
+                                    bgColor = '#dcfce7';
+                                    iconColor = '#16a34a';
+                                } else {
+                                    itemTitle = booking.experience?.title || 'Cultural Experience';
+                                    itemIcon = <MapPin size={16} />;
+                                    subtitle = 'Experience Booking';
+                                    bgColor = '#e0e7ff';
+                                    iconColor = '#4f46e5';
+                                }
 
                                 return (
                                 <div key={booking._id} className="reservation-ticket">
                                     <div className="ticket-header">
                                         <div className="tourist-info">
-                                            <div className="tourist-avatar" style={{ background: isGuide ? '#fef3c7' : '#e0e7ff', color: isGuide ? '#d97706' : '#4f46e5' }}>
+                                            <div className="tourist-avatar" style={{ background: bgColor, color: iconColor }}>
                                                 {itemIcon}
                                             </div>
                                             <div>
                                                 <h4>{itemTitle}</h4>
-                                                <span className="tourist-email">{isGuide ? 'Guide Booking' : 'Experience Booking'}</span>
+                                                <span className="tourist-email">{subtitle}</span>
                                             </div>
                                         </div>
                                         <span className={`status-pill status-${booking.status}`}>
@@ -473,22 +499,35 @@ const Dashboard = () => {
                                     
                                     <div className="ticket-body">
                                         <div className="ticket-detail-row">
-                                            <span className="ticket-label"><Calendar size={14} /> Date</span>
-                                            <span className="ticket-value">{new Date(booking.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                                            <span className="ticket-label"><Calendar size={14} /> {isAccommodation ? 'Check-In' : 'Date'}</span>
+                                            <span className="ticket-value">{new Date(isAccommodation ? booking.checkInDate : booking.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
                                         </div>
+                                        {isAccommodation && (
+                                            <div className="ticket-detail-row">
+                                                <span className="ticket-label"><Calendar size={14} /> Check-Out</span>
+                                                <span className="ticket-value">{new Date(booking.checkOutDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                                            </div>
+                                        )}
                                         <div className="ticket-detail-row">
-                                            <span className="ticket-label"><Users size={14} /> Group Size</span>
-                                            <span className="ticket-value">{booking.numberOfPeople} Guests</span>
+                                            <span className="ticket-label"><Users size={14} /> {isAccommodation ? 'Guests' : 'Group Size'}</span>
+                                            <span className="ticket-value">{booking.numberOfPeople} {isAccommodation ? 'Guests' : 'People'}</span>
                                         </div>
                                         <div className="ticket-detail-row">
                                             <span className="ticket-label"><DollarSign size={14} /> Total Paid</span>
                                             <span className="ticket-value highlight-price">&#8377;{booking.totalPrice}</span>
                                         </div>
                                         
-                                        {!isGuide && booking.experience?.location && (
+                                        {!isGuide && !isAccommodation && booking.experience?.location && (
                                             <div className="ticket-detail-row full-width">
                                                 <span className="ticket-label"><MapPin size={14} /> Location</span>
                                                 <span className="ticket-value">{booking.experience.location}</span>
+                                            </div>
+                                        )}
+                                        
+                                        {isAccommodation && booking.accommodation?.location && (
+                                            <div className="ticket-detail-row full-width">
+                                                <span className="ticket-label"><MapPin size={14} /> Address</span>
+                                                <span className="ticket-value">{booking.accommodation.location} ({booking.accommodation.type})</span>
                                             </div>
                                         )}
 

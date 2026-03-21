@@ -10,7 +10,7 @@ const bookingSchema = new mongoose.Schema({
     // What was booked
     bookingType: {
         type: String,
-        enum: ['experience', 'guide'],
+        enum: ['experience', 'guide', 'accommodation'],
         required: true
     },
     experience: {
@@ -23,10 +23,23 @@ const bookingSchema = new mongoose.Schema({
         ref: 'GuideProfile',
         default: null
     },
+    accommodation: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Accommodation',
+        default: null
+    },
     // Booking details
     date: {
         type: Date,
-        required: true
+        required: false
+    },
+    checkInDate: {
+        type: Date,
+        required: false
+    },
+    checkOutDate: {
+        type: Date,
+        required: false
     },
     numberOfPeople: {
         type: Number,
