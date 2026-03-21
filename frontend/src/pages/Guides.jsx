@@ -3,6 +3,7 @@ import { UserCheck, MapPin, Star, MessageCircle, Navigation, Award, Lock } from 
 import { Link } from 'react-router-dom';
 import { fetchApi } from '../api';
 import usePermissions from '../hooks/usePermissions';
+import ReviewModal from '../components/ReviewModal';
 import './Directory.css';
 
 const Guides = () => {
@@ -16,6 +17,9 @@ const Guides = () => {
   const [bookingData, setBookingData] = useState({ date: '', numberOfPeople: 1, specialRequests: '' });
   const [bookingLoading, setBookingLoading] = useState(false);
   const [bookingMessage, setBookingMessage] = useState({ type: '', text: '' });
+
+  // Review Modal State
+  const [reviewModalData, setReviewModalData] = useState({ isOpen: false, targetId: null, targetName: '' });
 
   useEffect(() => {
     const getGuides = async () => {
@@ -95,10 +99,18 @@ const Guides = () => {
                     </div>
                     <div style={{ width: '1px', background: '#eee' }}></div>
                     <div style={{ textAlign: 'center' }}>
-                       <div style={{ fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.2rem', color: 'var(--color-text-main)' }}>
+                       <div 
+                          style={{ fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.2rem', color: 'var(--color-text-main)', cursor: 'pointer' }}
+                          onClick={() => setReviewModalData({ isOpen: true, targetId: guide._id, targetName: guide.user?.name || 'Local Guide' })}
+                       >
                           <Star size={14} fill="var(--color-accent)" color="var(--color-accent)"/> {guide.rating}
                        </div>
-                       <small style={{ color: 'var(--color-text-muted)' }}>{guide.reviews} Reviews</small>
+                       <small 
+                          style={{ color: 'var(--color-text-muted)', cursor: 'pointer', textDecoration: 'underline' }}
+                          onClick={() => setReviewModalData({ isOpen: true, targetId: guide._id, targetName: guide.user?.name || 'Local Guide' })}
+                       >
+                          {guide.reviewsCount || 0} Reviews
+                       </small>
                     </div>
                  </div>
                  
@@ -209,6 +221,15 @@ const Guides = () => {
           </div>
         </div>
       )}
+
+      {/* Review Modal */}
+      <ReviewModal 
+        isOpen={reviewModalData.isOpen} 
+        onClose={() => setReviewModalData({ isOpen: false, targetId: null, targetName: '' })} 
+        targetId={reviewModalData.targetId} 
+        targetModel="GuideProfile" 
+        targetName={reviewModalData.targetName} 
+      />
     </div>
   );
 };

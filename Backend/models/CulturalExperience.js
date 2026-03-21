@@ -17,6 +17,8 @@ const culturalExperienceSchema = new mongoose.Schema({
     },
     organizer: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     images: [{ type: String }],
+    rating: { type: Number, default: 0 },
+    reviewsCount: { type: Number, default: 0 }
 }, { timestamps: true });
 
 module.exports = mongoose.model('CulturalExperience', culturalExperienceSchema);

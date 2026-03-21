@@ -11,6 +11,8 @@ const transportSchema = new mongoose.Schema({
     estimatedTime: { type: String },
     approximateCost: { type: Number },
     suggestedRoute: { type: String },
+    rating: { type: Number, default: 0 },
+    reviewsCount: { type: Number, default: 0 }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Transport', transportSchema);

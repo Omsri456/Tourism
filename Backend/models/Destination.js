@@ -15,7 +15,9 @@ const destinationSchema = new mongoose.Schema({
     bestTimeToVisit: { type: String },
     entryFee: { type: String, default: 'Free' },
     images: [{ type: String }],
-    nearbyAttractions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Destination' }]
+    nearbyAttractions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Destination' }],
+    rating: { type: Number, default: 0 },
+    reviewsCount: { type: Number, default: 0 }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Destination', destinationSchema);

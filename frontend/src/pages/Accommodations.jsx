@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Home, MapPin, Star, Coffee } from 'lucide-react';
 import { fetchApi } from '../api';
+import ReviewModal from '../components/ReviewModal';
 import './Directory.css';
 
 const Accommodations = () => {
@@ -8,6 +9,9 @@ const Accommodations = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filterType, setFilterType] = useState('All');
+
+  // Review Modal State
+  const [reviewModalData, setReviewModalData] = useState({ isOpen: false, targetId: null, targetName: '' });
 
   const types = ['All', 'Hotel', 'Eco-lodge', 'Tribal Homestay'];
 
@@ -80,7 +84,13 @@ const Accommodations = () => {
                  
                  <div className="dir-price">
                     <span>₹{stay.pricePerNight} / night</span>
-                    <span className="rating-badge"><Star size={14} fill="currentColor"/> {stay.rating || 0}</span>
+                    <span 
+                       className="rating-badge" 
+                       style={{ cursor: 'pointer' }}
+                       onClick={() => setReviewModalData({ isOpen: true, targetId: stay._id, targetName: stay.name })}
+                    >
+                       <Star size={14} fill="currentColor"/> {stay.rating || 0} ({stay.reviewsCount || 0})
+                    </span>
                  </div>
                  <button className="btn-primary" style={{ width: '100%', marginTop: '1rem', justifyContent: 'center' }}>Book Now</button>
               </div>
@@ -91,6 +101,15 @@ const Accommodations = () => {
            </div>
          )}
       </div>
+
+      {/* Review Modal */}
+      <ReviewModal 
+        isOpen={reviewModalData.isOpen} 
+        onClose={() => setReviewModalData({ isOpen: false, targetId: null, targetName: '' })} 
+        targetId={reviewModalData.targetId} 
+        targetModel="Accommodation" 
+        targetName={reviewModalData.targetName} 
+      />
     </div>
   );
 };

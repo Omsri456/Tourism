@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, MapPin, Filter } from 'lucide-react';
+import { Search, MapPin, Filter, Star } from 'lucide-react';
 import { fetchApi } from '../api';
+import ReviewModal from '../components/ReviewModal';
 import './Destinations.css';
 
 const Destinations = () => {
@@ -10,6 +11,9 @@ const Destinations = () => {
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState('All');
   const [search, setSearch] = useState('');
+
+  // Review Modal State
+  const [reviewModalData, setReviewModalData] = useState({ isOpen: false, targetId: null, targetName: '' });
 
   const categories = ['All', 'Waterfalls', 'Wildlife and national parks', 'Nature tourism', 'Tribal culture and heritage', 'Adventure tourism'];
 
@@ -81,8 +85,16 @@ const Destinations = () => {
               </div>
               <div className="dest-info">
                 <h3>{dest.name}</h3>
-                <p className="dest-location"><MapPin size={16} /> {dest.locationCoords?.lat ? 'Jharkhand' : 'Jharkhand'}</p>
-                <p className="dest-desc-short">{dest.description.substring(0, 80)}...</p>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <p className="dest-location" style={{ margin: 0 }}><MapPin size={16} /> {dest.locationCoords?.lat ? 'Jharkhand' : 'Jharkhand'}</p>
+                  <span 
+                     style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.2rem', fontSize: '0.9rem', color: '#fbbf24', fontWeight: 'bold' }}
+                     onClick={() => setReviewModalData({ isOpen: true, targetId: dest._id, targetName: dest.name })}
+                  >
+                     <Star size={14} fill="currentColor"/> {dest.rating || 0} ({dest.reviewsCount || 0})
+                  </span>
+                </div>
+                <p className="dest-desc-short" style={{ marginTop: '0.5rem' }}>{dest.description.substring(0, 80)}...</p>
                 <Link to={`/destinations/${dest._id}`} className="btn-primary mt-auto">View Details</Link>
               </div>
             </div>
@@ -94,6 +106,15 @@ const Destinations = () => {
           </div>
         )}
       </div>
+
+      {/* Review Modal */}
+      <ReviewModal 
+        isOpen={reviewModalData.isOpen} 
+        onClose={() => setReviewModalData({ isOpen: false, targetId: null, targetName: '' })} 
+        targetId={reviewModalData.targetId} 
+        targetModel="Destination" 
+        targetName={reviewModalData.targetName} 
+      />
     </div>
   );
 };
