@@ -57,6 +57,12 @@ const Guides = () => {
 
   const getValidImage = (img, fallback) => {
     if (!img || img === 'null' || img === 'undefined' || img.trim() === '') return fallback;
+    
+    img = img.replace(/\\/g, '/');
+    if (!img.startsWith('/') && img.startsWith('uploads')) {
+      img = `/${img}`;
+    }
+
     if (img.startsWith('/uploads')) return `http://localhost:5000${img}`;
     return img;
   };
@@ -83,7 +89,7 @@ const Guides = () => {
              <div key={guide._id} className="dir-card glass-card" style={{ textAlign: 'center' }}>
                 <div style={{ padding: '2rem 2rem 0', position: 'relative' }}>
                    <div style={{ width: '120px', height: '120px', borderRadius: '50%', margin: '0 auto', overflow: 'hidden', border: '4px solid var(--color-surface)', boxShadow: 'var(--shadow-md)' }}>
-                      <img src={getValidImage(guide.profileImage, 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80')} alt={guide.user?.name || 'Guide'} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <img src={getValidImage(guide.profileImage, 'https://placehold.co/400x400/2c5e3b/ffffff?text=Guide')} alt={guide.user?.name || 'Guide'} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                    </div>
                  <span style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', color: 'var(--color-primary)' }}><Award size={28} /></span>
               </div>

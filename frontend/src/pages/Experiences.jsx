@@ -64,6 +64,20 @@ const Experiences = () => {
 
   const totalPrice = bookingExp ? bookingExp.price * bookingData.numberOfPeople : 0;
 
+  const getValidImage = (imgArray, fallback) => {
+    if (!imgArray || !imgArray.length) return fallback;
+    let img = imgArray[0];
+    if (!img || img === 'null' || img === 'undefined' || img.trim() === '') return fallback;
+    
+    img = img.replace(/\\/g, '/');
+    if (!img.startsWith('/') && img.startsWith('uploads')) {
+      img = `/${img}`;
+    }
+    
+    if (img.startsWith('/uploads')) return `http://localhost:5000${img}`;
+    return img;
+  };
+
   return (
     <div className="directory-page">
       <div className="directory-header" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&q=80')" }}>
@@ -81,7 +95,7 @@ const Experiences = () => {
            experiences.map(exp => (
              <div key={exp._id} className="dir-card glass-card">
               <div className="dir-image-wrapper">
-                 <img src={exp.images?.[0] || 'https://images.unsplash.com/photo-1544604555-52fb9cc7d14e?auto=format&fit=crop&q=80'} alt={exp.title} className="dir-image" />
+                 <img src={getValidImage(exp.images, 'https://placehold.co/600x400/2c5e3b/ffffff?text=Experience')} alt={exp.title} className="dir-image" />
               </div>
               <div className="dir-content">
                  <h3 className="dir-title">{exp.title}</h3>

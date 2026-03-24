@@ -80,7 +80,7 @@ const Dashboard = () => {
     const [accLoading, setAccLoading] = useState(false);
     const [accMessage, setAccMessage] = useState({ type: '', text: '' });
 
-    const [transData, setTransData] = useState({ type: 'Bus', route: '', price: '', schedule: '', description: '' });
+    const [transData, setTransData] = useState({ type: 'Bus', origin: '', destination: '', price: '', schedule: '', description: '' });
     const [transLoading, setTransLoading] = useState(false);
     const [transMessage, setTransMessage] = useState({ type: '', text: '' });
 
@@ -321,12 +321,20 @@ const Dashboard = () => {
         setTransLoading(true);
         setTransMessage({ type: '', text: '' });
         try {
+            const payload = {
+                origin: transData.origin,
+                destination: transData.destination,
+                modeOfTransport: transData.type,
+                estimatedTime: transData.schedule,
+                approximateCost: Number(transData.price),
+                suggestedRoute: transData.description
+            };
             await fetchApi('/transport', { 
                 method: 'POST', 
-                body: JSON.stringify(transData) 
+                body: JSON.stringify(payload) 
             });
             setTransMessage({ type: 'success', text: 'Transport route added successfully!' });
-            setTransData({ type: 'Bus', route: '', price: '', schedule: '', description: '' });
+            setTransData({ type: 'Bus', origin: '', destination: '', price: '', schedule: '', description: '' });
         } catch (err) {
             setTransMessage({ type: 'error', text: err.message || 'Failed to add transport' });
         } finally {
@@ -1165,16 +1173,23 @@ const Dashboard = () => {
                                     <div className="input-with-icon"><Activity />
                                         <select name="type" value={transData.type} onChange={handleTransChange}>
                                             <option value="Bus">Bus</option>
-                                            <option value="Flight">Flight</option>
                                             <option value="Train">Train</option>
-                                            <option value="Cab">Cab</option>
+                                            <option value="Taxi/Cab">Taxi/Cab</option>
+                                            <option value="Auto-rickshaw">Auto-rickshaw</option>
+                                            <option value="Other">Other</option>
                                         </select>
                                     </div>
                                 </div>
                                 <div className="form-group">
-                                    <label>Route</label>
+                                    <label>Origin</label>
                                     <div className="input-with-icon"><MapPin />
-                                        <input type="text" name="route" value={transData.route} onChange={handleTransChange} placeholder="e.g. Ranchi to Netarhat" required />
+                                        <input type="text" name="origin" value={transData.origin} onChange={handleTransChange} placeholder="e.g. Ranchi" required />
+                                    </div>
+                                </div>
+                                <div className="form-group">
+                                    <label>Destination</label>
+                                    <div className="input-with-icon"><MapPin />
+                                        <input type="text" name="destination" value={transData.destination} onChange={handleTransChange} placeholder="e.g. Netarhat" required />
                                     </div>
                                 </div>
                             </div>

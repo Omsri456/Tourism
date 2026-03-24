@@ -17,7 +17,7 @@ const guidesData = [
     expertise: ['Tribal Villages', 'Waterfalls', 'Local Cuisine'], // Maps to areasOfExpertise
     rating: 4.8,
     reviews: 124, // Maps to reviewsCount
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80',
+    image: '/uploads/guide_ramesh.png',
     verificationStatus: 'Verified'
   },
   {
@@ -28,7 +28,7 @@ const guidesData = [
     expertise: ['Art & Craft', 'Chhau Dance History', 'Homestays'],
     rating: 4.9,
     reviews: 86,
-    image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80',
+    image: '/uploads/guide_priya.png',
     verificationStatus: 'Verified'
   },
   {
@@ -39,7 +39,7 @@ const guidesData = [
     expertise: ['Nature Trails', 'Maluti Temples', 'Photography'],
     rating: 4.7,
     reviews: 210,
-    image: 'https://images.unsplash.com/photo-1542362567-baf03f8a0044?auto=format&fit=crop&q=80',
+    image: '/uploads/guide_sushil.png',
     verificationStatus: 'Verified'
   }
 ];
@@ -66,7 +66,8 @@ const seedGuides = async () => {
             areasOfExpertise: guide.expertise,
             rating: guide.rating,
             reviewsCount: guide.reviews,
-            isVerified: guide.verificationStatus === 'Verified'
+            isVerified: guide.verificationStatus === 'Verified',
+            profileImage: guide.image
         }));
 
         await GuideProfile.insertMany(guideProfilesToInsert);

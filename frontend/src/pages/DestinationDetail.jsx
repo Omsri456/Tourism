@@ -30,11 +30,25 @@ const DestinationDetail = () => {
     return <div className="page error-page"><h2>Destination Not Found</h2><p>{error}</p><Link to="/destinations" className="btn-primary">Back to Destinations</Link></div>;
   }
 
+  const getValidImage = (imgArray, fallback) => {
+    if (!imgArray || !imgArray.length) return fallback;
+    let img = imgArray[0];
+    if (!img || img === 'null' || img === 'undefined' || img.trim() === '') return fallback;
+    
+    img = img.replace(/\\/g, '/');
+    if (!img.startsWith('/') && img.startsWith('uploads')) {
+      img = `/${img}`;
+    }
+    
+    if (img.startsWith('/uploads')) return `http://localhost:5000${img}`;
+    return img;
+  };
+
   return (
     <div className="destination-detail-page">
       <div 
         className="detail-hero" 
-        style={{ backgroundImage: `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.8)), url(${destination.images?.[0] || 'https://images.unsplash.com/photo-1543085698-500e2bcaa8e3?auto=format&fit=crop&q=80'})` }}
+        style={{ backgroundImage: `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.8)), url(${getValidImage(destination.images, 'https://placehold.co/1200x600/2c5e3b/ffffff?text=Destination')})` }}
       >
         <div className="detail-hero-content page">
           <Link to="/destinations" className="back-link"><ArrowLeft size={20} /> Back to Explorer</Link>

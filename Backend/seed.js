@@ -20,7 +20,7 @@ const destinations = [
     name: 'Hundru Falls',
     category: 'Waterfalls',
     description: 'One of the most famous waterfalls in Jharkhand, offering a spectacular view as the Subarnarekha River falls from a height of 320 feet.',
-    images: ['https://images.unsplash.com/photo-1543085698-500e2bcaa8e3?auto=format&fit=crop&q=80'],
+    images: ['/uploads/hundru_falls.png'],
     bestTimeToVisit: 'July to November',
     entryFee: '₹10 per person',
     locationCoords: { lat: 23.4475, lng: 85.6425 }
@@ -29,7 +29,7 @@ const destinations = [
     name: 'Betla National Park',
     category: 'Wildlife and national parks',
     description: 'A beautiful national park situated in the Chota Nagpur Plateau of the Latehar district of Jharkhand, India, featuring diverse flora and fauna, including elephants, tigers, and leopards.',
-    images: ['https://images.unsplash.com/photo-1582559936853-a7905d4fa355?auto=format&fit=crop&q=80'],
+    images: ['/uploads/betla.png'],
     bestTimeToVisit: 'October to April',
     entryFee: '₹50 per person (Indians), ₹200 (Foreigners)',
     locationCoords: { lat: 23.8821, lng: 84.1951 }
@@ -38,7 +38,7 @@ const destinations = [
     name: 'Netarhat',
     category: 'Nature tourism',
     description: 'Known as the "Queen of Chotanagpur," Netarhat is a picturesque hill station famous for its breathtaking sunrises and sunsets.',
-    images: ['https://images.unsplash.com/photo-1506744626753-1fa44df31c78?auto=format&fit=crop&q=80'],
+    images: ['/uploads/netarhat.png'],
     bestTimeToVisit: 'Throughout the year',
     entryFee: 'Free',
     locationCoords: { lat: 23.4729, lng: 84.2691 }
@@ -47,7 +47,7 @@ const destinations = [
     name: 'Baidyanath Jyotirlinga Temple',
     category: 'Tribal culture and heritage',
     description: 'Also known as Baba Baidyanath Dham, it is one of the twelve Jyotirlingas, the most sacred abodes of Shiva.',
-    images: ['https://images.unsplash.com/photo-1588630650906-8809088cc524?auto=format&fit=crop&q=80'],
+    images: ['/uploads/baidyanath.png'],
     bestTimeToVisit: 'Shravan month (July-August) and Mahashivratri',
     entryFee: 'Free (VIP Darshan ₹250)',
     locationCoords: { lat: 24.4922, lng: 86.6997 }
@@ -56,7 +56,7 @@ const destinations = [
     name: 'Dalma Wildlife Sanctuary',
     category: 'Adventure tourism',
     description: 'Famous for Indian Elephants, Dalma Wildlife Sanctuary offers excellent trekking opportunities and a chance to immerse in dense forests.',
-    images: ['https://images.unsplash.com/photo-1565153920973-e8ee1c1e089d?auto=format&fit=crop&q=80'],
+    images: ['/uploads/dalma.png'],
     bestTimeToVisit: 'October to March',
     entryFee: '₹5 per head, ₹150 for cars',
     locationCoords: { lat: 22.9099, lng: 86.2201 }
@@ -98,7 +98,8 @@ const accommodations = [
     pricePerNight: 2500,
     rating: 4.5,
     reviewsCount: 120,
-    facilities: ['Guided Tours', 'Local Food', 'Campfire', 'Parking']
+    facilities: ['Guided Tours', 'Local Food', 'Campfire', 'Parking'],
+    images: ['/uploads/eco_lodge.png']
   },
   {
     name: 'Santhal Village Homestay',
@@ -107,7 +108,8 @@ const accommodations = [
     pricePerNight: 1200,
     rating: 4.8,
     reviewsCount: 85,
-    facilities: ['Authentic Meals', 'Cultural Performance', 'Handicraft Tour']
+    facilities: ['Authentic Meals', 'Cultural Performance', 'Handicraft Tour'],
+    images: ['/uploads/santhal_homestay.png']
   },
   {
     name: 'Ranchi Premium Hotel',
@@ -116,7 +118,8 @@ const accommodations = [
     pricePerNight: 4000,
     rating: 4.2,
     reviewsCount: 300,
-    facilities: ['AC', 'WiFi', 'Pool', 'Restaurant']
+    facilities: ['AC', 'WiFi', 'Pool', 'Restaurant'],
+    images: ['/uploads/premium_hotel.png']
   }
 ];
 
@@ -132,7 +135,7 @@ const experiences = [
         name: 'Saraikela Cultural Troupe',
         contact: '9876543210'
     },
-    images: ['https://images.unsplash.com/photo-1533038590840-1c7989eb20da?auto=format&fit=crop&q=80']
+    images: ['/uploads/chhau.png']
   },
   {
     title: 'Sohrai Art Workshop',
@@ -145,7 +148,7 @@ const experiences = [
         name: 'Hazaribagh Art Cooperative',
         contact: '9876543211'
     },
-    images: ['https://images.unsplash.com/photo-1544604555-52fb9cc7d14e?auto=format&fit=crop&q=80']
+    images: ['/uploads/sohrai.png']
   },
   {
     title: 'Tribal Food Tasting Tour',
@@ -158,7 +161,7 @@ const experiences = [
         name: 'Ranchi Local Guides',
         contact: '9876543212'
     },
-    images: ['https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80']
+    images: ['/uploads/food.png']
   }
 ];
 

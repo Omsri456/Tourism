@@ -73,6 +73,20 @@ const Accommodations = () => {
   }
   const totalPrice = selectedStay && nights > 0 ? selectedStay.pricePerNight * nights : 0;
 
+  const getValidImage = (imgArray, fallback) => {
+    if (!imgArray || !imgArray.length) return fallback;
+    let img = imgArray[0];
+    if (!img || img === 'null' || img === 'undefined' || img.trim() === '') return fallback;
+    
+    img = img.replace(/\\/g, '/');
+    if (!img.startsWith('/') && img.startsWith('uploads')) {
+      img = `/${img}`;
+    }
+    
+    if (img.startsWith('/uploads')) return `http://localhost:5000${img}`;
+    return img;
+  };
+
   return (
     <div className="directory-page">
       <div className="directory-header" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&q=80')" }}>
@@ -106,7 +120,7 @@ const Accommodations = () => {
            filteredStays.map(stay => (
              <div key={stay._id} className="dir-card glass-card">
               <div className="dir-image-wrapper">
-                 <img src={stay.images?.[0] || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80'} alt={stay.name} className="dir-image" />
+                 <img src={getValidImage(stay.images, 'https://placehold.co/600x400/2c5e3b/ffffff?text=Accommodation')} alt={stay.name} className="dir-image" />
                  <span className="dir-type-badge">{stay.type}</span>
               </div>
               <div className="dir-content">

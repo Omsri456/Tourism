@@ -37,8 +37,14 @@ const Destinations = () => {
 
   const getValidImage = (imgArray, fallback) => {
     if (!imgArray || !imgArray.length) return fallback;
-    const img = imgArray[0];
+    let img = imgArray[0];
     if (!img || img === 'null' || img === 'undefined' || img.trim() === '') return fallback;
+    
+    img = img.replace(/\\/g, '/');
+    if (!img.startsWith('/') && img.startsWith('uploads')) {
+      img = `/${img}`;
+    }
+    
     if (img.startsWith('/uploads')) return `http://localhost:5000${img}`;
     return img;
   };
@@ -85,7 +91,7 @@ const Destinations = () => {
           filteredDestinations.map(dest => (
             <div key={dest._id} className="dest-card glass-card">
               <div className="dest-image-wrapper">
-                <img src={getValidImage(dest.images, 'https://images.unsplash.com/photo-1543085698-500e2bcaa8e3?auto=format&fit=crop&q=80')} alt={dest.name} className="dest-image" />
+                <img src={getValidImage(dest.images, 'https://placehold.co/600x400/2c5e3b/ffffff?text=Destination')} alt={dest.name} className="dest-image" />
                 <span className="dest-badge">{dest.category}</span>
               </div>
               <div className="dest-info">
