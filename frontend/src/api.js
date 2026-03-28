@@ -15,6 +15,8 @@ export const fetchApi = async (endpoint, options = {}) => {
     headers['Authorization'] = `Bearer ${token}`;
   }
 
+
+
   try {
     const response = await fetch(`/api${endpoint}`, {
       ...options,
@@ -43,4 +45,30 @@ export const fetchApi = async (endpoint, options = {}) => {
     console.error(`Error fetching ${endpoint}:`, error);
     throw error;
   }
+};
+
+// Itinerary Generate API
+export const generateItinerary = async (data) => {
+    try {
+        const response = await fetchApi('/itinerary/generate', {
+            method: 'POST',
+            body: JSON.stringify(data)
+        });
+        return response;
+    } catch (error) {
+        throw error;
+    }
+};
+
+// AI Chat API
+export const chatWithAI = async (message, chatHistory = []) => {
+    try {
+        const response = await fetchApi('/chat', {
+            method: 'POST',
+            body: JSON.stringify({ message, chatHistory })
+        });
+        return response;
+    } catch (error) {
+        throw error;
+    }
 };

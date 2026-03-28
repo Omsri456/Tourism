@@ -22,6 +22,7 @@ const Navbar = () => {
     { name: 'Stay', path: '/accommodations' },
     { name: 'Experiences', path: '/experiences' },
     { name: 'Guides', path: '/guides' },
+    { name: 'Itinerary', path: '/itinerary' },
   ];
 
   const isActive = (path) => {

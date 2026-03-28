@@ -1,0 +1,224 @@
+.itinerary-page {
+    padding: 2rem 5%;
+    min-height: calc(100vh - 160px);
+    background: #f8fbfa;
+    color: #333;
+}
+
+.itinerary-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.itinerary-header h1 {
+    font-size: 2.5rem;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.itinerary-header p {
+    color: #7f8c8d;
+    font-size: 1.1rem;
+}
+
+.itinerary-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.itinerary-form-wrapper {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    max-width: 600px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.itinerary-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-group label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: block;
+    color: #34495e;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+    border-color: #27ae60;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.1);
+}
+
+.generate-btn {
+    background: #27ae60;
+    color: white;
+    padding: 1rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.generate-btn:hover {
+    background: #219a52;
+}
+
+.generate-btn:disabled {
+    background: #95a5a6;
+    cursor: not-allowed;
+}
+
+.error-message {
+    color: #e74c3c;
+    margin-top: 1rem;
+    text-align: center;
+    font-weight: 500;
+}
+
+/* Results section */
+.itinerary-results {
+    margin-top: 2rem;
+}
+
+.itinerary-results h2 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 2rem;
+}
+
+.options-container {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.itinerary-option {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    border-top: 4px solid #3498db;
+}
+
+.itinerary-option.in-budget {
+    border-top-color: #27ae60;
+}
+
+.itinerary-option.over-budget {
+    border-top-color: #e67e22;
+}
+
+.option-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+.option-header h3 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 1.4rem;
+}
+
+.cost-info {
+    font-weight: 600;
+    color: #7f8c8d;
+}
+
+.cost-info span {
+    color: #27ae60;
+    font-size: 1.2rem;
+}
+
+.over-budget .cost-info span {
+    color: #e67e22;
+}
+
+.itinerary-days {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.day-card {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.2rem;
+    border-left: 4px solid #3498db;
+}
+
+.day-card h4 {
+    margin-top: 0;
+    color: #34495e;
+    font-size: 1.1rem;
+    margin-bottom: 0.8rem;
+}
+
+.activity-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.activity-list li {
+    position: relative;
+    padding-left: 1.5rem;
+    margin-bottom: 0.6rem;
+    color: #555;
+    line-height: 1.4;
+}
+
+.activity-list li::before {
+    content: "•";
+    color: #3498db;
+    position: absolute;
+    left: 0;
+    font-weight: bold;
+}
+
+.stay-item {
+    font-weight: 600;
+    color: #27ae60 !important;
+    margin-top: 1rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed #ddd;
+}
+
+.stay-item::before {
+    content: "🛏️" !important;
+    font-size: 0.9em;
+}
+
+.budget-warning {
+    margin-top: 1.5rem;
+    color: #e67e22;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-align: center;
+}

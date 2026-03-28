@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import ChatBox from './components/ChatBox';
 
 // Pages
 import {
@@ -14,7 +15,8 @@ import {
   Guides,
   Login,
   Register,
-  Dashboard
+  Dashboard,
+  Itinerary
 } from './pages';
 
 import './App.css';
@@ -37,8 +39,10 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/itinerary" element={<Itinerary />} />
           </Routes>
         </main>
+        <ChatBox />
         <Footer />
       </div>
     </Router>

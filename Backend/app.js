@@ -28,6 +28,8 @@ const guideRoutes = require("./routes/guideRoutes");
 const bookingRoutes = require("./routes/bookingRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const itineraryRoutes = require("./routes/itineraryRoutes");
+const chatRoutes = require("./routes/chatRoutes");
 
 // Serve statically uploaded images
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
@@ -41,6 +43,8 @@ app.use("/api/guides", guideRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/itinerary", itineraryRoutes);
+app.use("/api/chat", chatRoutes);
 
 // Base route test
 app.get("/", (req, res) => {
