@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Bus, Clock, IndianRupee, Map } from 'lucide-react';
+import { Bus, Clock, IndianRupee, Map, Star } from 'lucide-react';
 import { fetchApi } from '../api';
+import ReviewModal from '../components/ReviewModal';
 import './Directory.css';
 
 const Transport = () => {
@@ -10,6 +11,9 @@ const Transport = () => {
   
   const [fromLocation, setFromLocation] = useState('');
   const [toLocation, setToLocation] = useState('');
+
+  // Review Modal State
+  const [reviewModalData, setReviewModalData] = useState({ isOpen: false, targetId: null, targetName: '' });
 
   useEffect(() => {
     const getTransports = async () => {
@@ -91,7 +95,15 @@ const Transport = () => {
                    <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}><IndianRupee size={16} className="text-secondary"/> ₹{route.approximateCost}</div>
                  </div>
                  <p className="transport-desc">{route.suggestedRoute}</p>
-                 <button className="btn-outline mt-3" style={{ marginTop: '1rem', padding: '0.5rem 1rem'}}>View Schedule</button>
+                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem' }}>
+                   <button className="btn-outline" style={{ padding: '0.5rem 1rem'}}>View Schedule</button>
+                   <span 
+                      style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.2rem', fontSize: '0.9rem', color: 'var(--color-primary)', fontWeight: 'bold' }}
+                      onClick={() => setReviewModalData({ isOpen: true, targetId: route._id, targetName: `${route.origin} to ${route.destination} via ${route.modeOfTransport}` })}
+                   >
+                      <Star size={14} fill="currentColor"/> {route.rating || 0} ({route.reviewsCount || 0})
+                   </span>
+                 </div>
               </div>
             </div>
           ))
@@ -101,6 +113,15 @@ const Transport = () => {
            </div>
         )}
       </div>
+
+      {/* Review Modal */}
+      <ReviewModal 
+        isOpen={reviewModalData.isOpen} 
+        onClose={() => setReviewModalData({ isOpen: false, targetId: null, targetName: '' })} 
+        targetId={reviewModalData.targetId} 
+        targetModel="Transport" 
+        targetName={reviewModalData.targetName} 
+      />
     </div>
   );
 };

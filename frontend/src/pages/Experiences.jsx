@@ -3,6 +3,8 @@ import { Music, MapPin, Clock, Users, Lock, X, CheckCircle, AlertCircle, Calenda
 import { Link } from 'react-router-dom';
 import { fetchApi } from '../api';
 import usePermissions from '../hooks/usePermissions';
+import ReviewModal from '../components/ReviewModal';
+import { Star } from 'lucide-react';
 import './Directory.css';
 
 const Experiences = () => {
@@ -16,6 +18,9 @@ const Experiences = () => {
   const [bookingData, setBookingData] = useState({ date: '', numberOfPeople: 1, specialRequests: '' });
   const [bookingLoading, setBookingLoading] = useState(false);
   const [bookingMsg, setBookingMsg] = useState({ type: '', text: '' });
+
+  // Review Modal State
+  const [reviewModalData, setReviewModalData] = useState({ isOpen: false, targetId: null, targetName: '' });
 
   useEffect(() => {
     const getExperiences = async () => {
@@ -105,7 +110,16 @@ const Experiences = () => {
                     <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}><Clock size={16}/> Duration: {exp.duration}</div>
                     <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}><Users size={16}/> Host: {exp.organizerInfo?.name || exp.organizer?.name || 'Local Organizer'}</div>
                  </div>
-                 <div className="dir-price"><span>&#8377;{exp.price} / person</span></div>
+                 <div className="dir-price" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                   <span>&#8377;{exp.price} / person</span>
+                   <span 
+                      className="rating-badge" 
+                      style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.2rem', fontSize: '0.9rem', color: 'var(--color-primary)' }}
+                      onClick={() => setReviewModalData({ isOpen: true, targetId: exp._id, targetName: exp.title })}
+                   >
+                      <Star size={14} fill="currentColor"/> {exp.rating || 0} ({exp.reviewsCount || 0})
+                   </span>
+                 </div>
 
                  {!isLoggedIn ? (
                    <Link to="/login" className="btn-secondary" style={{ width: '100%', marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', textDecoration: 'none' }}>
@@ -193,6 +207,15 @@ const Experiences = () => {
           </div>
         </div>
       )}
+
+      {/* Review Modal */}
+      <ReviewModal 
+        isOpen={reviewModalData.isOpen} 
+        onClose={() => setReviewModalData({ isOpen: false, targetId: null, targetName: '' })} 
+        targetId={reviewModalData.targetId} 
+        targetModel="CulturalExperience" 
+        targetName={reviewModalData.targetName} 
+      />
     </div>
   );
 };
